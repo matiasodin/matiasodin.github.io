@@ -1,747 +1,959 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Social DCK - Plataforma Social Personalizada</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  body {
-    transition: background-color 0.3s, color 0.3s;
-  }
-  button {
-    transition: background-color 0.3s, transform 0.3s;
-    user-select: none;
-  }
-  button:hover {
-    transform: scale(1.05);
-  }
-  #btnNewPost {
-    background-color: #6366f1;
-    color: white;
-    padding: 0.6rem 1.2rem;
-    border-radius: 9999px;
-    font-weight: 700;
-    box-shadow: 0 4px 6px rgba(99,102,241,0.5);
-    cursor: pointer;
-  }
-  #btnNewPost:hover {
-    background-color: #4f46e5;
-    box-shadow: 0 6px 10px rgba(79,70,229,0.8);
-  }
-  #app {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 1rem;
-  }
-  .hidden {display:none;}
-  #profilePanel {
-    background: #1f2937;
-    padding: 1rem;
-    border-radius: 0.75rem;
-    color: white;
-  }
-  #profilePanel img {
-    border-radius: 9999px;
-    border: 3px solid #818cf8;
-    width: 96px;
-    height: 96px;
-    object-fit: cover;
-    margin-bottom: 0.5rem;
-  }
-  #profileBanner {
-    width: 100%;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-  input, textarea {
-    width: 100%;
-    background: #374151;
-    border: none;
-    border-radius: 0.375rem;
-    padding: 0.5rem;
-    color: white;
-    margin-top: 0.25rem;
-  }
-  textarea {
-    resize: vertical;
-  }
-  label {
-    font-weight: 600;
-    margin-top: 0.75rem;
-    display: block;
-  }
-  #feed {
-    margin-top: 2rem;
-  }
-  .post {
-    background: #374151;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-    color: white;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-  }
-  .post-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
-  }
-  .post-header img {
-    width: 48px;
-    height: 48px;
-    border-radius: 9999px;
-    border: 2px solid #818cf8;
-    object-fit: cover;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-  }
-  .post-header img:hover {
-    transform: scale(1.2);
-  }
-  .post-username {
-    font-weight: 700;
-    font-size: 1.125rem;
-    color: #a5b4fc;
-  }
-  .post-title {
-    font-weight: 700;
-    font-size: 1.25rem;
-    margin-bottom: 0.3rem;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-  }
-  .post-link {
-    color: #818cf8;
-    font-weight: 600;
-    text-decoration: underline;
-    word-break: break-word;
-    cursor: pointer;
-  }
-  .post-link:hover {
-    color: #a5b4fc;
-  }
-  .post-image {
-    margin-top: 0.75rem;
-    max-height: 250px;
-    object-fit: contain;
-    border-radius: 0.5rem;
-    width: 100%;
-  }
-  .interactions {
-    margin-top: 1rem;
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
-  .btn-like, .btn-comment {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2rem;
-    color: #818cf8;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    transition: color 0.3s ease;
-  }
-  .btn-like.liked {
-    color: #f87171;
-  }
-  .btn-like:hover, .btn-comment:hover {
-    color: #a5b4fc;
-  }
-  .likes-avatars {
-    display: flex;
-    gap: -8px;
-  }
-  .likes-avatars img {
-    width: 28px;
-    height: 28px;
-    border-radius: 9999px;
-    border: 2px solid #f87171;
-    object-fit: cover;
-    box-shadow: 0 0 6px #f87171aa;
-    cursor: default;
-    transition: transform 0.2s ease;
-  }
-  .likes-avatars img:hover {
-    transform: scale(1.25);
-    position: relative;
-    z-index: 10;
-  }
-  .comments {
-    margin-top: 0.75rem;
-    max-height: 150px;
-    overflow-y: auto;
-    border-top: 1px solid #4b5563;
-    padding-top: 0.5rem;
-  }
-  .comment {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-    align-items: center;
-  }
-  .comment img {
-    width: 28px;
-    height: 28px;
-    border-radius: 9999px;
-    object-fit: cover;
-    border: 2px solid #a5b4fc;
-  }
-  .comment-text {
-    background: #4b5563;
-    border-radius: 0.375rem;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-    color: white;
-    max-width: 90%;
-    word-wrap: break-word;
-  }
-  .comment-form {
-    margin-top: 0.5rem;
-    display: flex;
-    gap: 0.5rem;
-  }
-  .comment-form input {
-    flex: 1;
-    background: #374151;
-    border: none;
-    border-radius: 0.375rem;
-    color: white;
-    padding: 0.5rem;
-  }
-  .comment-form button {
-    background: #6366f1;
-    color: white;
-    border: none;
-    padding: 0 1rem;
-    border-radius: 9999px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-  .comment-form button:hover {
-    background: #4f46e5;
-  }
-  #modalOverlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.75);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    z-index: 999;
-  }
-  #modalOverlay.active {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  #modal {
-    background: #1f2937;
-    border-radius: 0.75rem;
-    width: 90%;
-    max-width: 480px;
-    padding: 1.5rem;
-    color: white;
-    position: relative;
-  }
-  #modal h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: #a5b4fc;
-  }
-  #modal button.close-btn {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.75rem;
-    background: transparent;
-    border: none;
-    font-size: 1.75rem;
-    color: #9ca3af;
-    cursor: pointer;
-    transition: color 0.3s ease;
-  }
-  #modal button.close-btn:hover {
-    color: white;
-  }
-  #welcomeScreen {
-    max-width: 400px;
-    margin: 4rem auto 0;
-    background: #1f2937;
-    border-radius: 0.75rem;
-    padding: 2rem;
-    color: white;
-    text-align: center;
-  }
-  #welcomeScreen input {
-    width: 100%;
-    padding: 0.75rem;
-    margin-top: 1rem;
-    border-radius: 0.375rem;
-    border: none;
-    background: #374151;
-    color: white;
-  }
-  #welcomeScreen button {
-    margin-top: 1rem;
-    width: 100%;
-    background: #6366f1;
-    color: white;
-    border: none;
-    padding: 0.75rem;
-    border-radius: 9999px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-  #welcomeScreen button:hover {
-    background: #4f46e5;
-  }
-  #filterButtons {
-    margin-bottom: 1rem;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-  }
-  #filterButtons button {
-    background: #374151;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 9999px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-  #filterButtons button.active {
-    background: #6366f1;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SLC - Plataforma de Addons</title>
+  <style>
+    /* Reset y base */
+    * {
+      box-sizing: border-box;
+      margin: 0; padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: #121212;
+      color: #eee;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1, h2, h3 {
+      margin-bottom: 15px;
+    }
+
+    /* Botones animados */
+    .btn {
+      background: linear-gradient(135deg, #6b43f8, #b15fff);
+      border: none;
+      padding: 12px 25px;
+      border-radius: 30px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgb(107 67 248 / 0.5);
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 14px rgb(177 95 255 / 0.8);
+    }
+    .btn:active {
+      transform: scale(0.95);
+      box-shadow: 0 3px 6px rgb(107 67 248 / 0.6);
+    }
+
+    /* Contenedor principal */
+    #app {
+      max-width: 900px;
+      width: 100%;
+      background: #1e1e2f;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 0 15px #6b43f8;
+      min-height: 600px;
+    }
+
+    /* Secciones */
+    section {
+      display: none;
+      animation: fadeIn 0.4s ease forwards;
+    }
+    section.active {
+      display: block;
+    }
+
+    /* Animación fadeIn */
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    /* Menú superior */
+    nav#main-menu {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+    nav#main-menu .btn {
+      font-size: 1rem;
+    }
+
+    /* Inputs y form */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 450px;
+      margin: 0 auto 25px;
+    }
+    input[type=text], input[type=email], input[type=password], textarea, input[type=file] {
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      resize: vertical;
+    }
+    textarea {
+      min-height: 70px;
+    }
+
+    /* Mensajes de error o feedback */
+    .error, .feedback {
+      color: #ff6b6b;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .success {
+      color: #a4f9a4;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    /* Avatar */
+    #avatar-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    #avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 10px #b15fff;
+      margin-bottom: 8px;
+      background: #333;
+    }
+
+    /* Addons list */
+    .addon {
+      display: flex;
+      background: #29294d;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      overflow: hidden;
+      box-shadow: 0 0 12px rgb(177 95 255 / 0.4);
+    }
+    .addon img {
+      width: 120px;
+      height: 100px;
+      object-fit: cover;
+      border-right: 2px solid #6b43f8;
+    }
+    .addon-details {
+      flex-grow: 1;
+      padding: 12px 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .addon-details h3 {
+      color: #b15fff;
+      font-weight: 700;
+    }
+    .addon-details p {
+      font-size: 0.9rem;
+      margin-top: 4px;
+      flex-grow: 1;
+    }
+    .addon-meta {
+      font-size: 0.8rem;
+      color: #bbb;
+      margin-top: 6px;
+      font-style: italic;
+    }
+
+    /* Addon acciones (likes, editar, borrar) */
+    .addon-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 10px 12px;
+      justify-content: flex-start;
+      align-items: center;
+      background: #3a3a6b;
+      min-width: 100px;
+      color: #eee;
+    }
+    .addon-actions .like-btn {
+      cursor: pointer;
+      user-select: none;
+      font-size: 1.5rem;
+      color: #ff6b6b;
+      transition: transform 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .addon-actions .like-btn.liked {
+      color: #ff1a75;
+      transform: scale(1.2);
+      text-shadow: 0 0 6px #ff1a75;
+    }
+    .addon-actions button {
+      background: linear-gradient(135deg, #ff6b6b, #ff1a75);
+      border: none;
+      border-radius: 15px;
+      padding: 6px 12px;
+      color: white;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.3s ease;
+      width: 100%;
+    }
+    .addon-actions button:hover {
+      background: linear-gradient(135deg, #ff1a75, #ff6b6b);
+    }
+
+    /* Comentarios */
+    .comments {
+      background: #222244;
+      border-radius: 12px;
+      margin-top: 12px;
+      padding: 10px 12px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+    .comment {
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .comment-user {
+      font-weight: 700;
+      color: #b15fff;
+    }
+    .comment-text {
+      color: #ddd;
+      flex-grow: 1;
+    }
+    .comment-form {
+      margin-top: 10px;
+      display: flex;
+      gap: 6px;
+    }
+    .comment-form input[type=text] {
+      flex-grow: 1;
+      border-radius: 20px;
+      padding: 8px 15px;
+      font-size: 0.9rem;
+      border: none;
+      outline: none;
+    }
+    .comment-form button {
+      border-radius: 20px;
+      background: #b15fff;
+      border: none;
+      padding: 8px 16px;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+    .comment-form button:hover {
+      background: #6b43f8;
+    }
+
+    /* Header sesión */
+    #user-header {
+      margin-bottom: 18px;
+      text-align: center;
+      color: #b15fff;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    #user-header button {
+      margin-left: 15px;
+      font-size: 0.9rem;
+      background: none;
+      border: 1px solid #b15fff;
+      padding: 5px 12px;
+      border-radius: 15px;
+      color: #b15fff;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    #user-header button:hover {
+      background: #6b43f8;
+      color: white;
+      border-color: #6b43f8;
+    }
+
+    /* Pantalla bienvenida */
+    #welcome-screen {
+      text-align: center;
+    }
+    #welcome-screen h1 {
+      font-size: 3rem;
+      margin-bottom: 30px;
+      color: #b15fff;
+      text-shadow: 0 0 10px #b15fff;
+    }
+    #welcome-screen .btn {
+      margin: 8px;
+      font-size: 1.2rem;
+    }
+
+    /* Mensajes error general */
+    .error-msg {
+      color: #ff6b6b;
+      font-weight: 700;
+      margin: 10px 0;
+      text-align: center;
+    }
+
+  </style>
 </head>
 <body>
-<div id="app" class="min-h-screen">
 
-  <!-- Bienvenida (Login / Registro) -->
-  <section id="welcomeScreen">
-    <h1 class="text-3xl font-extrabold mb-4 select-none">¡Bienvenido a Social DCK!</h1>
-    <p>Ingresa tu correo para registrarte o iniciar sesión:</p>
-    <input type="email" id="inputEmail" placeholder="correo@ejemplo.com" autocomplete="off" />
-    <button id="btnEnter">Entrar</button>
-    <p id="welcomeMsg" class="mt-2 text-red-400"></p>
-  </section>
+<div id="app">
 
-  <!-- Perfil y feed (oculto hasta login) -->
-  <section id="mainApp" class="hidden">
-
-    <header class="flex justify-between items-center py-4 border-b border-gray-700">
-      <h2 class="text-indigo-400 text-3xl font-extrabold select-none">Social DCK</h2>
-      <div class="flex items-center gap-4">
-        <button id="btnNewPost">+ Publicar</button>
-        <button id="btnEditProfile" title="Editar perfil">👤 Perfil</button>
-        <button id="btnLogout" class="text-red-500 font-semibold hover:text-red-400">Salir</button>
-      </div>
-    </header>
-
-    <section id="profilePanel" class="mt-4">
-      <img id="profileBanner" src="" alt="Banner perfil" />
-      <img id="profileAvatar" src="" alt="Avatar perfil" />
-      <h3 id="profileName" class="text-2xl font-bold mt-2"></h3>
-      <p id="profileBio" class="mb-4"></p>
-      <button id="btnCustomize">🎨 Personalizar diseño</button>
-    </section>
-
-    <section id="customizePanel" class="hidden mt-4 p-4 bg-gray-800 rounded-lg text-white">
-      <label for="inputProfileBg">Color fondo página:</label>
-      <input type="color" id="inputProfileBg" value="#1f2937" />
-      <label for="inputProfileText" class="mt-2">Color texto:</label>
-      <input type="color" id="inputProfileText" value="#f9fafb" />
-      <label for="inputProfileBanner" class="mt-2">Link banner imagen/GIF:</label>
-      <input type="text" id="inputProfileBanner" placeholder="https://..." />
-      <label for="inputProfileAvatar" class="mt-2">Link avatar imagen/GIF:</label>
-      <input type="text" id="inputProfileAvatar" placeholder="https://..." />
-      <label for="inputProfileName" class="mt-2">Nombre:</label>
-      <input type="text" id="inputProfileName" />
-      <label for="inputProfileBio" class="mt-2">Descripción:</label>
-      <textarea id="inputProfileBio" rows="3"></textarea>
-      <button id="btnSaveProfile" class="mt-4 w-full bg-indigo-600 py-2 rounded-lg font-semibold hover:bg-indigo-700">Guardar perfil</button>
-      <p id="saveProfileMsg" class="mt-2 text-green-400"></p>
-    </section>
-
-    <section id="filterButtons" class="mt-6">
-      <button id="filterPopular" class="active">Más populares ❤️</button>
-      <button id="filterRecent">Recientes 🕒</button>
-    </section>
-
-    <section id="feed"></section>
-  </section>
-
-  <!-- Modal Crear Publicación -->
-  <div id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1" class="hidden fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
-    <div id="modal" class="bg-gray-800 rounded-lg w-11/12 max-w-lg p-6 text-white relative">
-      <h3 id="modalTitle" class="text-xl font-bold mb-4">Nueva publicación</h3>
-      <button id="modalCloseBtn" class="close-btn absolute top-2 right-4 text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
-      <form id="postForm" class="space-y-4">
-        <label for="postTitle">Título:</label>
-        <input id="postTitle" type="text" placeholder="Título" required />
-        <label for="postLink">Link (https://):</label>
-        <input id="postLink" type="url" placeholder="https://..." required />
-        <label for="postImage">Link imagen/GIF (opcional):</label>
-        <input id="postImage" type="text" placeholder="https://..." />
-        <label for="postIcon">Ícono o emoji (opcional):</label>
-        <input id="postIcon" type="text" maxlength="3" placeholder="🔥, 😊, 🎉" />
-        <button type="submit" class="w-full bg-indigo-600 py-2 rounded-lg font-semibold hover:bg-indigo-700">Publicar</button>
-      </form>
-      <p id="postMsg" class="text-green-400 mt-2"></p>
-    </div>
+  <!-- Cabecera usuario -->
+  <div id="user-header" class="hidden">
+    Usuario: <span id="user-email"></span>
+    <button id="btn-logout" title="Cerrar sesión">Cerrar sesión</button>
   </div>
+
+  <!-- Menú principal -->
+  <nav id="main-menu" class="hidden">
+    <button class="btn" id="btn-profile">👤 Perfil</button>
+    <button class="btn" id="btn-upload">⬆️ Subir addon</button>
+    <button class="btn" id="btn-search">🔍 Buscar addon</button>
+    <button class="btn" id="btn-addon-list">📦 Addons recientes</button>
+    <button class="btn" id="btn-discord">💬 Discord</button>
+  </nav>
+
+  <!-- Pantalla bienvenida -->
+  <section id="welcome-screen" class="active">
+    <h1>Bienvenido a SLC</h1>
+    <button id="btn-show-login" class="btn">🔑 Iniciar sesión</button>
+    <button id="btn-show-register" class="btn">📝 Registrarse</button>
+  </section>
+
+  <!-- Login -->
+  <section id="login-screen">
+    <h2>Iniciar sesión 🔑</h2>
+    <form id="login-form">
+      <input type="email" id="login-email" placeholder="Correo electrónico" required />
+      <input type="password" id="login-password" placeholder="Contraseña" required />
+      <button type="submit" class="btn">Entrar</button>
+      <p class="error-msg" id="login-error"></p>
+      <p>
+        ¿No tienes cuenta? <a href="#" id="link-to-register">Regístrate aquí</a>
+      </p>
+      <button class="btn" id="btn-back-to-welcome">Volver</button>
+    </form>
+  </section>
+
+  <!-- Registro -->
+  <section id="register-screen">
+    <h2>Registrarse 📝</h2>
+    <form id="register-form">
+      <input type="email" id="register-email" placeholder="Correo electrónico" required />
+      <input type="password" id="register-password" placeholder="Contraseña" required minlength="6" />
+      <button type="submit" class="btn">Crear cuenta</button>
+      <p class="error-msg" id="register-error"></p>
+      <p>
+        ¿Ya tienes cuenta? <a href="#" id="link-to-login">Inicia sesión aquí</a>
+      </p>
+      <button class="btn" id="btn-back-to-welcome2">Volver</button>
+    </form>
+  </section>
+
+  <!-- Perfil -->
+  <section id="profile" class="hidden">
+    <h2>👤 Perfil de <span id="profile-email"></span></h2>
+    <div id="avatar-container">
+      <img id="avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Avatar" />
+      <br />
+      <label for="avatar-upload" id="avatar-upload-label" class="btn no-shine" style="display:inline-flex; margin-top:10px;">
+        📷 Cambiar avatar
+      </label>
+      <input type="file" id="avatar-upload" accept="image/*,image/gif" />
+    </div>
+
+    <h3>📦 Mis addons subidos</h3>
+    <div id="addons-list-profile">
+      <!-- Addons del usuario aparecerán aquí -->
+    </div>
+  </section>
+
+  <!-- Subir addon -->
+  <section id="upload" class="hidden">
+    <h2>⬆️ Subir nuevo addon</h2>
+    <form id="upload-addon-form">
+      <label for="addon-name">Nombre del addon</label>
+      <input type="text" id="addon-name" required maxlength="50" placeholder="Nombre..." />
+      <label for="addon-description">Descripción</label>
+      <textarea id="addon-description" required maxlength="300" placeholder="Descripción..."></textarea>
+      <label for="addon-file">Archivo del addon</label>
+      <input type="file" id="addon-file" accept=".zip,.json" required />
+      <label for="addon-image">Imagen o GIF representativo</label>
+      <input type="file" id="addon-image" accept="image/*,image/gif" />
+      <button type="submit" class="btn no-shine">Publicar 🎉</button>
+    </form>
+    <div id="upload-feedback" class="feedback"></div>
+  </section>
+
+  <!-- Buscar addon -->
+  <section id="search" class="hidden">
+    <h2>🔍 Buscar addons</h2>
+    <div id="search-addon" style="margin-bottom: 15px;">
+      <input type="text" id="search-text" placeholder="Buscar por nombre o autor..." style="width:70%; padding:8px; border-radius: 15px; border:none;"/>
+      <button id="btn-do-search" class="btn" style="padding: 9px 15px; font-weight: 700;">Buscar</button>
+    </div>
+    <div id="addons-list-search">
+      <!-- Resultados de búsqueda -->
+    </div>
+  </section>
+
+  <!-- Addons recientes -->
+  <section id="addon-list" class="hidden">
+    <h2>📦 Addons recientes</h2>
+    <div id="addons-list-recent">
+      <!-- Lista addons recientes -->
+    </div>
+  </section>
+
 </div>
 
 <script>
-(() => {
-  const welcomeScreen = document.getElementById('welcomeScreen');
-  const inputEmail = document.getElementById('inputEmail');
-  const btnEnter = document.getElementById('btnEnter');
-  const welcomeMsg = document.getElementById('welcomeMsg');
+  // Claves almacenamiento
+  const STORAGE_KEYS = {
+    USERS: 'slc_users',
+    SESSION: 'slc_session',
+    ADDONS: 'slc_addons'
+  };
 
-  const mainApp = document.getElementById('mainApp');
-  const btnLogout = document.getElementById('btnLogout');
-  const btnNewPost = document.getElementById('btnNewPost');
-  const btnEditProfile = document.getElementById('btnEditProfile');
-  const profilePanel = document.getElementById('profilePanel');
-  const profileBanner = document.getElementById('profileBanner');
-  const profileAvatar = document.getElementById('profileAvatar');
-  const profileName = document.getElementById('profileName');
-  const profileBio = document.getElementById('profileBio');
-  const btnCustomize = document.getElementById('btnCustomize');
-  const customizePanel = document.getElementById('customizePanel');
-  const inputProfileBg = document.getElementById('inputProfileBg');
-  const inputProfileText = document.getElementById('inputProfileText');
-  const inputProfileBanner = document.getElementById('inputProfileBanner');
-  const inputProfileAvatar = document.getElementById('inputProfileAvatar');
-  const inputProfileName = document.getElementById('inputProfileName');
-  const inputProfileBio = document.getElementById('inputProfileBio');
-  const btnSaveProfile = document.getElementById('btnSaveProfile');
-  const saveProfileMsg = document.getElementById('saveProfileMsg');
-
-  const feed = document.getElementById('feed');
-  const filterPopular = document.getElementById('filterPopular');
-  const filterRecent = document.getElementById('filterRecent');
-
-  const modalOverlay = document.getElementById('modalOverlay');
-  const modalCloseBtn = document.getElementById('modalCloseBtn');
-  const postForm = document.getElementById('postForm');
-  const postTitle = document.getElementById('postTitle');
-  const postLink = document.getElementById('postLink');
-  const postImage = document.getElementById('postImage');
-  const postIcon = document.getElementById('postIcon');
-  const postMsg = document.getElementById('postMsg');
-
-  let currentUser = null;
-  let profiles = {};
-  let posts = [];
-  let currentFilter = 'popular';
-
-  function saveData() {
-    localStorage.setItem('sdck_profiles', JSON.stringify(profiles));
-    localStorage.setItem('sdck_posts', JSON.stringify(posts));
-    localStorage.setItem('sdck_currentUser', currentUser || '');
+  // Cargar y guardar datos en localStorage
+  function loadData(key, defaultVal) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : defaultVal;
+    } catch {
+      return defaultVal;
+    }
   }
-  function loadData() {
-    profiles = JSON.parse(localStorage.getItem('sdck_profiles') || '{}');
-    posts = JSON.parse(localStorage.getItem('sdck_posts') || '[]');
-    currentUser = localStorage.getItem('sdck_currentUser') || null;
-    if(currentUser === '') currentUser = null;
+  function saveData(key, val) {
+    localStorage.setItem(key, JSON.stringify(val));
   }
 
-  function isValidEmail(email){
-    return email && email.includes('@') && email.includes('.');
+  // Datos
+  let users = loadData(STORAGE_KEYS.USERS, []);
+  let session = loadData(STORAGE_KEYS.SESSION, null);
+  let addons = loadData(STORAGE_KEYS.ADDONS, []);
+
+  // Referencias DOM
+  const sections = {
+    welcome: document.getElementById('welcome-screen'),
+    login: document.getElementById('login-screen'),
+    register: document.getElementById('register-screen'),
+    profile: document.getElementById('profile'),
+    upload: document.getElementById('upload'),
+    search: document.getElementById('search'),
+    addonList: document.getElementById('addon-list')
+  };
+  const mainMenu = document.getElementById('main-menu');
+  const userHeader = document.getElementById('user-header');
+  const userEmailSpan = document.getElementById('user-email');
+
+  // Mostrar sección y ocultar otras
+  function showSection(name) {
+    for (const key in sections) {
+      if (sections[key]) {
+        if (key === name) {
+          sections[key].classList.add('active');
+          sections[key].classList.remove('hidden');
+        } else {
+          sections[key].classList.remove('active');
+          sections[key].classList.add('hidden');
+        }
+      }
+    }
+  }
+  function showAppUI(show) {
+    if(show) {
+      mainMenu.classList.remove('hidden');
+      userHeader.classList.remove('hidden');
+    } else {
+      mainMenu.classList.add('hidden');
+      userHeader.classList.add('hidden');
+    }
   }
 
-  function renderProfile(){
-    if(!currentUser) return;
-    const p = profiles[currentUser];
-    if(!p) return;
-    profileBanner.src = p.banner || 'https://via.placeholder.com/720x120?text=Banner';
-    profileAvatar.src = p.avatar || 'https://via.placeholder.com/96';
-    profileName.textContent = p.name || currentUser.split('@')[0];
-    profileBio.textContent = p.bio || '';
-    // Aplicar tema
-    document.body.style.backgroundColor = p.bgColor || '#1f2937';
-    document.body.style.color = p.textColor || '#f9fafb';
-
-    // Actualizar inputs personalización
-    inputProfileBg.value = p.bgColor || '#1f2937';
-    inputProfileText.value = p.textColor || '#f9fafb';
-    inputProfileBanner.value = p.banner || '';
-    inputProfileAvatar.value = p.avatar || '';
-    inputProfileName.value = p.name || '';
-    inputProfileBio.value = p.bio || '';
+  // Login flow
+  function login(email, password) {
+    const user = users.find(u => u.email === email);
+    if(!user) return 'Usuario no encontrado';
+    if(user.password !== password) return 'Contraseña incorrecta';
+    session = { email };
+    saveData(STORAGE_KEYS.SESSION, session);
+    return null;
+  }
+  function logout() {
+    session = null;
+    saveData(STORAGE_KEYS.SESSION, null);
+  }
+  function register(email, password) {
+    if(users.find(u => u.email === email)) return 'El correo ya está registrado';
+    users.push({ email, password, avatar: null });
+    saveData(STORAGE_KEYS.USERS, users);
+    return null;
   }
 
-  function renderFeed(){
-    feed.innerHTML = '';
-    if(posts.length === 0){
-      feed.innerHTML = '<p class="text-gray-400 text-center mt-10">No hay publicaciones aún.</p>';
+  // Avatar
+  function getAvatar(email) {
+    const user = users.find(u => u.email === email);
+    return user && user.avatar ? user.avatar : 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+  }
+  function setAvatar(email, base64) {
+    const user = users.find(u => u.email === email);
+    if(user) {
+      user.avatar = base64;
+      saveData(STORAGE_KEYS.USERS, users);
+    }
+  }
+
+  // Render avatar perfil
+  const avatarImg = document.getElementById('avatar');
+  function renderAvatar() {
+    if(!session) return;
+    avatarImg.src = getAvatar(session.email);
+  }
+
+  // Mostrar addons del usuario en perfil
+  const addonsListProfile = document.getElementById('addons-list-profile');
+  function renderUserAddons() {
+    if(!session) return;
+    addonsListProfile.innerHTML = '';
+    const userAddons = addons.filter(a => a.author === session.email);
+    if(userAddons.length === 0) {
+      addonsListProfile.innerHTML = '<p>No has subido ningún addon aún.</p>';
       return;
     }
+    userAddons.forEach(addon => {
+      addonsListProfile.appendChild(createAddonElement(addon, true));
+    });
+  }
 
-    let postsToRender = [...posts];
-    if(currentFilter === 'popular') {
-      postsToRender.sort((a,b) => b.likes.length - a.likes.length || b.date - a.date);
+  // Crear elemento addon (usado en perfil y búsqueda)
+  // editable = true permite editar y borrar en perfil
+  function createAddonElement(addon, editable = false) {
+    const div = document.createElement('div');
+    div.className = 'addon';
+
+    // Imagen
+    const img = document.createElement('img');
+    img.src = addon.image || 'https://cdn-icons-png.flaticon.com/512/190/190411.png';
+    img.alt = addon.name;
+    div.appendChild(img);
+
+    // Detalles
+    const details = document.createElement('div');
+    details.className = 'addon-details';
+
+    const h3 = document.createElement('h3');
+    h3.textContent = addon.name;
+    details.appendChild(h3);
+
+    const desc = document.createElement('p');
+    desc.textContent = addon.description;
+    details.appendChild(desc);
+
+    const meta = document.createElement('div');
+    meta.className = 'addon-meta';
+    const date = new Date(addon.date);
+    meta.textContent = `Por ${addon.author} · Subido: ${date.toLocaleString()}`;
+    details.appendChild(meta);
+
+    // Comentarios
+    const commentsDiv = document.createElement('div');
+    commentsDiv.className = 'comments';
+    if(addon.comments.length === 0) {
+      commentsDiv.textContent = 'Sin comentarios aún.';
     } else {
-      postsToRender.sort((a,b) => b.date - a.date);
+      addon.comments.forEach(c => {
+        const cDiv = document.createElement('div');
+        cDiv.className = 'comment';
+        const userSpan = document.createElement('span');
+        userSpan.className = 'comment-user';
+        userSpan.textContent = c.user + ':';
+        const textSpan = document.createElement('span');
+        textSpan.className = 'comment-text';
+        textSpan.textContent = c.text;
+        cDiv.appendChild(userSpan);
+        cDiv.appendChild(textSpan);
+        commentsDiv.appendChild(cDiv);
+      });
+    }
+    details.appendChild(commentsDiv);
+
+    // Form para agregar comentario si hay sesión
+    if(session) {
+      const commentForm = document.createElement('form');
+      commentForm.className = 'comment-form';
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'Agregar comentario...';
+      input.required = true;
+      commentForm.appendChild(input);
+      const btn = document.createElement('button');
+      btn.type = 'submit';
+      btn.textContent = 'Enviar';
+      commentForm.appendChild(btn);
+      commentForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const text = input.value.trim();
+        if(text.length < 2) return alert('El comentario es muy corto');
+        addon.comments.push({ user: session.email, text });
+        saveData(STORAGE_KEYS.ADDONS, addons);
+        renderUserAddons();
+        renderAddonsSearch(document.getElementById('search-text').value.trim());
+        renderRecentAddons();
+      });
+      details.appendChild(commentForm);
     }
 
-    postsToRender.forEach(post => {
-      const profile = profiles[post.user] || {};
-      const name = profile.name || post.user;
-      const avatar = profile.avatar || 'https://via.placeholder.com/96';
+    div.appendChild(details);
 
-      const postEl = document.createElement('article');
-      postEl.className = 'post';
+    // Acciones
+    if(editable) {
+      const actions = document.createElement('div');
+      actions.className = 'addon-actions';
 
-      const dateStr = new Date(post.date).toLocaleString();
-
-      // Likes avatars
-      const likesAvatarsHTML = post.likes.slice(0,5).map(u => {
-        const p = profiles[u] || {};
-        return `<img src="${p.avatar || 'https://via.placeholder.com/96'}" alt="${p.name || u}" title="${p.name || u}" />`;
-      }).join('');
-
-      // Comentarios HTML
-      const commentsHTML = post.comments.map(c => {
-        const p = profiles[c.user] || {};
-        const cName = p.name || c.user;
-        const cAvatar = p.avatar || 'https://via.placeholder.com/96';
-        const cText = c.text;
-        return `
-          <div class="comment">
-            <img src="${cAvatar}" alt="${cName}" />
-            <div class="comment-text"><strong>${cName}:</strong> ${cText}</div>
-          </div>
-        `;
-      }).join('');
-
-      postEl.innerHTML = `
-        <div class="post-header">
-          <img src="${avatar}" alt="${name}" title="${name}" />
-          <div class="post-username">${name}</div>
-          <div class="ml-auto text-gray-400 text-sm">${dateStr}</div>
-        </div>
-        <div class="post-title">${post.icon ? post.icon + ' ' : ''}${post.title}</div>
-        <a href="${post.link}" target="_blank" rel="noopener noreferrer" class="post-link">${post.link}</a>
-        ${post.image ? `<img src="${post.image}" alt="Imagen post" class="post-image" />` : ''}
-        <div class="interactions">
-          <button class="btn-like ${post.likes.includes(currentUser) ? 'liked' : ''}" aria-label="Me gusta">❤️ <span>${post.likes.length}</span></button>
-          <button class="btn-comment" aria-label="Comentar">💬 <span>${post.comments.length}</span></button>
-          <div class="likes-avatars" title="Usuarios que dieron like">${likesAvatarsHTML}</div>
-        </div>
-        <div class="comments" style="display:none;">${commentsHTML}</div>
-        <form class="comment-form" aria-label="Agregar comentario">
-          <input type="text" placeholder="Comentar..." required maxlength="140" />
-          <button type="submit">Enviar</button>
-        </form>
-      `;
-
-      // Eventos Likes
-      const likeBtn = postEl.querySelector('.btn-like');
+      // Likes con animación
+      const likeBtn = document.createElement('div');
+      likeBtn.className = 'like-btn';
+      likeBtn.innerHTML = `❤️ ${addon.likes.length}`;
+      if(session && addon.likes.includes(session.email)) likeBtn.classList.add('liked');
       likeBtn.onclick = () => {
-        toggleLike(post.id);
+        if(!session) return alert('Debes iniciar sesión para dar like');
+        const likedIndex = addon.likes.indexOf(session.email);
+        if(likedIndex >= 0) {
+          addon.likes.splice(likedIndex, 1);
+        } else {
+          addon.likes.push(session.email);
+        }
+        saveData(STORAGE_KEYS.ADDONS, addons);
+        renderUserAddons();
+        renderAddonsSearch(document.getElementById('search-text').value.trim());
+        renderRecentAddons();
       };
+      actions.appendChild(likeBtn);
 
-      // Comentarios toggle
-      const commentBtn = postEl.querySelector('.btn-comment');
-      const commentsSection = postEl.querySelector('.comments');
-      commentsSection.style.display = 'none';
-      commentBtn.onclick = () => {
-        commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
-      };
+      // Editar (solo demo, alerta)
+      const btnEdit = document.createElement('button');
+      btnEdit.textContent = 'Editar';
+      btnEdit.onclick = () => alert('Funcionalidad editar aún no implementada');
+      actions.appendChild(btnEdit);
 
-      // Agregar comentario
-      const commentForm = postEl.querySelector('.comment-form');
-      commentForm.onsubmit = e => {
-        e.preventDefault();
-        const input = commentForm.querySelector('input');
-        if(input.value.trim()){
-          addComment(post.id, input.value.trim());
-          input.value = '';
-          commentsSection.style.display = 'block';
-          renderFeed();
+      // Borrar
+      const btnDelete = document.createElement('button');
+      btnDelete.textContent = 'Borrar';
+      btnDelete.onclick = () => {
+        if(confirm('¿Seguro que quieres borrar este addon?')) {
+          const idx = addons.findIndex(a => a.id === addon.id);
+          if(idx >= 0) {
+            addons.splice(idx, 1);
+            saveData(STORAGE_KEYS.ADDONS, addons);
+            renderUserAddons();
+            renderAddonsSearch(document.getElementById('search-text').value.trim());
+            renderRecentAddons();
+          }
         }
       };
+      actions.appendChild(btnDelete);
 
-      feed.appendChild(postEl);
+      div.appendChild(actions);
+    } else {
+      // Para vista no editable (buscar o recientes) solo like
+      const actions = document.createElement('div');
+      actions.className = 'addon-actions';
+      const likeBtn = document.createElement('div');
+      likeBtn.className = 'like-btn';
+      likeBtn.innerHTML = `❤️ ${addon.likes.length}`;
+      if(session && addon.likes.includes(session.email)) likeBtn.classList.add('liked');
+      likeBtn.onclick = () => {
+        if(!session) return alert('Debes iniciar sesión para dar like');
+        const likedIndex = addon.likes.indexOf(session.email);
+        if(likedIndex >= 0) {
+          addon.likes.splice(likedIndex, 1);
+        } else {
+          addon.likes.push(session.email);
+        }
+        saveData(STORAGE_KEYS.ADDONS, addons);
+        renderUserAddons();
+        renderAddonsSearch(document.getElementById('search-text').value.trim());
+        renderRecentAddons();
+      };
+      actions.appendChild(likeBtn);
+      div.appendChild(actions);
+    }
+
+    return div;
+  }
+
+  // Render búsqueda addons
+  const addonsListSearch = document.getElementById('addons-list-search');
+  function renderAddonsSearch(filter) {
+    addonsListSearch.innerHTML = '';
+    let filtered = addons;
+    if(filter) {
+      const low = filter.toLowerCase();
+      filtered = addons.filter(a => a.name.toLowerCase().includes(low) || a.author.toLowerCase().includes(low));
+    }
+    if(filtered.length === 0) {
+      addonsListSearch.innerHTML = '<p>No se encontraron addons.</p>';
+      return;
+    }
+    filtered.forEach(addon => {
+      addonsListSearch.appendChild(createAddonElement(addon));
     });
   }
 
-  function toggleLike(postId){
-    if(!currentUser) return alert('Debes iniciar sesión para dar like');
-    const post = posts.find(p => p.id === postId);
-    if(!post) return;
-    const idx = post.likes.indexOf(currentUser);
-    if(idx >= 0) post.likes.splice(idx,1);
-    else post.likes.push(currentUser);
-    saveData();
-    renderFeed();
-  }
-
-  function addComment(postId, text){
-    if(!currentUser) return alert('Debes iniciar sesión para comentar');
-    const post = posts.find(p => p.id === postId);
-    if(!post) return;
-    post.comments.push({ user: currentUser, text, date: Date.now() });
-    saveData();
-    renderFeed();
-  }
-
-  btnSaveProfile.onclick = () => {
-    if(!currentUser) return;
-    profiles[currentUser] = {
-      name: inputProfileName.value.trim() || currentUser.split('@')[0],
-      bio: inputProfileBio.value.trim(),
-      avatar: inputProfileAvatar.value.trim() || 'https://via.placeholder.com/96',
-      banner: inputProfileBanner.value.trim() || 'https://via.placeholder.com/720x120?text=Banner',
-      bgColor: inputProfileBg.value,
-      textColor: inputProfileText.value,
-    };
-    saveData();
-    saveProfileMsg.textContent = 'Perfil guardado correctamente';
-    setTimeout(() => { saveProfileMsg.textContent = ''; }, 3000);
-    renderProfile();
-  };
-
-  btnCustomize.onclick = () => {
-    customizePanel.classList.toggle('hidden');
-  };
-
-  function openModal(){
-    modalOverlay.classList.add('active');
-    postTitle.focus();
-    postMsg.textContent = '';
-    postForm.reset();
-  }
-  function closeModal(){
-    modalOverlay.classList.remove('active');
-    postMsg.textContent = '';
-  }
-  btnNewPost.onclick = () => {
-    if(!currentUser){
-      alert('Debes iniciar sesión para publicar');
+  // Render addons recientes (botón Addon)
+  const addonsListRecent = document.getElementById('addons-list-recent');
+  function renderRecentAddons() {
+    addonsListRecent.innerHTML = '';
+    // Ordenar por fecha descendente
+    const sorted = [...addons].sort((a,b) => new Date(b.date) - new Date(a.date));
+    if(sorted.length === 0) {
+      addonsListRecent.innerHTML = '<p>No hay addons subidos aún.</p>';
       return;
     }
-    openModal();
+    sorted.forEach(addon => {
+      addonsListRecent.appendChild(createAddonElement(addon));
+    });
+  }
+
+  // Eventos botones menú
+  document.getElementById('btn-profile').onclick = () => {
+    if(!session) return alert('Debes iniciar sesión');
+    showSection('profile');
+    renderAvatar();
+    renderUserAddons();
   };
-  modalCloseBtn.onclick = closeModal;
-  modalOverlay.onclick = e => {
-    if(e.target === modalOverlay) closeModal();
+  document.getElementById('btn-upload').onclick = () => {
+    if(!session) return alert('Debes iniciar sesión');
+    showSection('upload');
+    document.getElementById('upload-feedback').textContent = '';
+    document.getElementById('upload-addon-form').reset();
   };
-  document.addEventListener('keydown', e => {
-    if(e.key === 'Escape' && modalOverlay.classList.contains('active')) closeModal();
+  document.getElementById('btn-search').onclick = () => {
+    showSection('search');
+    renderAddonsSearch('');
+    document.getElementById('search-text').value = '';
+  };
+  document.getElementById('btn-addon-list').onclick = () => {
+    showSection('addonList');
+    renderRecentAddons();
+  };
+  document.getElementById('btn-discord').onclick = () => {
+    window.open('https://discord.gg/Pm3W6gJunx', '_blank');
+  };
+
+  // Mostrar pantalla bienvenida
+  function showWelcome() {
+    showAppUI(false);
+    showSection('welcome');
+  }
+
+  // Form login
+  document.getElementById('btn-show-login').onclick = () => {
+    showAppUI(false);
+    showSection('login');
+    document.getElementById('login-error').textContent = '';
+    document.getElementById('login-form').reset();
+  };
+  document.getElementById('btn-show-register').onclick = () => {
+    showAppUI(false);
+    showSection('register');
+    document.getElementById('register-error').textContent = '';
+    document.getElementById('register-form').reset();
+  };
+  document.getElementById('link-to-register').onclick = e => {
+    e.preventDefault();
+    document.getElementById('register-error').textContent = '';
+    showSection('register');
+  };
+  document.getElementById('link-to-login').onclick = e => {
+    e.preventDefault();
+    document.getElementById('login-error').textContent = '';
+    showSection('login');
+  };
+
+  // Botones volver desde login y register
+  document.getElementById('btn-back-to-welcome').onclick = () => showWelcome();
+  document.getElementById('btn-back-to-welcome2').onclick = () => showWelcome();
+
+  // Login submit
+  document.getElementById('login-form').onsubmit = e => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value.trim().toLowerCase();
+    const pass = document.getElementById('login-password').value;
+    const errDiv = document.getElementById('login-error');
+    errDiv.textContent = '';
+    const err = login(email, pass);
+    if(err) {
+      errDiv.textContent = err;
+    } else {
+      userEmailSpan.textContent = email;
+      showAppUI(true);
+      showSection('addonList');
+    }
+  };
+
+  // Register submit
+  document.getElementById('register-form').onsubmit = e => {
+    e.preventDefault();
+    const email = document.getElementById('register-email').value.trim().toLowerCase();
+    const pass = document.getElementById('register-password').value;
+    const errDiv = document.getElementById('register-error');
+    errDiv.textContent = '';
+    if(pass.length < 6) {
+      errDiv.textContent = 'La contraseña debe tener al menos 6 caracteres';
+      return;
+    }
+    const err = register(email, pass);
+    if(err) {
+      errDiv.textContent = err;
+    } else {
+      alert('Cuenta creada. Ahora inicia sesión.');
+      showSection('login');
+    }
+  };
+
+  // Logout
+  document.getElementById('btn-logout').onclick = () => {
+    logout();
+    showWelcome();
+  };
+
+  // Cambiar avatar
+  document.getElementById('avatar-upload').onchange = e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    if(!file.type.startsWith('image/')) {
+      alert('Solo se permiten archivos de imagen o GIF.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = evt => {
+      setAvatar(session.email, evt.target.result);
+      renderAvatar();
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Subir addon
+  document.getElementById('upload-addon-form').onsubmit = e => {
+    e.preventDefault();
+    if(!session) return alert('Debes iniciar sesión para subir addons');
+    const name = document.getElementById('addon-name').value.trim();
+    const description = document.getElementById('addon-description').value.trim();
+    const file = document.getElementById('addon-file').files[0];
+    const imageFile = document.getElementById('addon-image').files[0];
+    const feedback = document.getElementById('upload-feedback');
+
+    if(!name || !description || !file) {
+      feedback.style.color = '#ff6b6b';
+      feedback.textContent = 'Completa todos los campos requeridos.';
+      return;
+    }
+
+    if(file.size > 5*1024*1024) {
+      feedback.style.color = '#ff6b6b';
+      feedback.textContent = 'El archivo es demasiado grande (máx 5MB).';
+      return;
+    }
+
+    if(imageFile && !imageFile.type.startsWith('image/')) {
+      feedback.style.color = '#ff6b6b';
+      feedback.textContent = 'La imagen debe ser un archivo válido de imagen o GIF.';
+      return;
+    }
+
+    feedback.style.color = '#eee';
+    feedback.textContent = 'Subiendo addon...';
+
+    if(imageFile) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        saveAddon(name, description, file, e.target.result);
+      };
+      reader.onerror = () => {
+        feedback.style.color = '#ff6b6b';
+        feedback.textContent = 'Error al leer la imagen.';
+      };
+      reader.readAsDataURL(imageFile);
+    } else {
+      saveAddon(name, description, file, null);
+    }
+
+    function saveAddon(name, desc, fileObj, imageBase64) {
+      const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
+      const newAddon = {
+        id,
+        name,
+        description: desc,
+        author: session.email,
+        date: new Date().toISOString(),
+        likes: [],
+        comments: [],
+        image: imageBase64,
+        // Nota: no guardamos archivo real en localStorage por limitaciones
+      };
+      addons.push(newAddon);
+      saveData(STORAGE_KEYS.ADDONS, addons);
+      feedback.style.color = '#a4f9a4';
+      feedback.textContent = 'Addon subido con éxito! 🎉';
+      document.getElementById('upload-addon-form').reset();
+      renderUserAddons();
+      renderAddonsSearch(document.getElementById('search-text').value.trim());
+      renderRecentAddons();
+    }
+  };
+
+  // Buscar addons
+  document.getElementById('btn-do-search').onclick = () => {
+    const text = document.getElementById('search-text').value.trim();
+    renderAddonsSearch(text);
+  };
+  document.getElementById('search-text').addEventListener('keypress', e => {
+    if(e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('btn-do-search').click();
+    }
   });
 
-  postForm.onsubmit = e => {
-    e.preventDefault();
-    if(!currentUser) return alert('Debes iniciar sesión para publicar');
-    const title = postTitle.value.trim();
-    const link = postLink.value.trim();
-    const image = postImage.value.trim();
-    const icon = postIcon.value.trim();
-    if(!title || !link){
-      postMsg.textContent = 'Título y link son obligatorios';
-      return;
+  // Inicializar app
+  function init() {
+    if(session) {
+      userEmailSpan.textContent = session.email;
+      showAppUI(true);
+      showSection('addonList');
+    } else {
+      showWelcome();
     }
-    posts.unshift({
-      id: Date.now(),
-      user: currentUser,
-      title,
-      link,
-      image: image || null,
-      icon: icon || null,
-      date: Date.now(),
-      likes: [],
-      comments: [],
-    });
-    saveData();
-    renderFeed();
-    closeModal();
-  };
-
-  btnEnter.onclick = () => {
-    const email = inputEmail.value.trim().toLowerCase();
-    if(!isValidEmail(email)){
-      welcomeMsg.textContent = 'Por favor ingresa un correo válido';
-      return;
-    }
-    welcomeMsg.textContent = '';
-    currentUser = email;
-    if(!profiles[currentUser]){
-      profiles[currentUser] = {
-        name: currentUser.split('@')[0],
-        bio: '',
-        avatar: 'https://via.placeholder.com/96',
-        banner: 'https://via.placeholder.com/720x120?text=Banner',
-        bgColor: '#1f2937',
-        textColor: '#f9fafb',
-      };
-      saveData();
-    }
-    loadAppForUser();
-  };
-
-  btnLogout.onclick = () => {
-    if(confirm('¿Cerrar sesión?')){
-      currentUser = null;
-      saveData();
-      mainApp.classList.add('hidden');
-      welcomeScreen.classList.remove('hidden');
-      resetApp();
-    }
-  };
-
-  function loadAppForUser(){
-    welcomeScreen.classList.add('hidden');
-    mainApp.classList.remove('hidden');
-    renderProfile();
-    renderFeed();
-    customizePanel.classList.add('hidden');
-    inputEmail.value = '';
   }
+  init();
 
-  function resetApp(){
-    document.body.style.backgroundColor = '#1f2937';
-    document.body.style.color = '#f9fafb';
-    feed.innerHTML = '';
-    profileBanner.src = '';
-    profileAvatar.src = '';
-    profileName.textContent = '';
-    profileBio.textContent = '';
-    customizePanel.classList.add('hidden');
-  }
-
-  filterPopular.onclick = () => {
-    currentFilter = 'popular';
-    filterPopular.classList.add('active');
-    filterRecent.classList.remove('active');
-    renderFeed();
-  };
-  filterRecent.onclick = () => {
-    currentFilter = 'recent';
-    filterRecent.classList.add('active');
-    filterPopular.classList.remove('active');
-    renderFeed();
-  };
-
-  loadData();
-  if(currentUser) loadAppForUser();
-
-})();
 </script>
+
 </body>
 </html>
