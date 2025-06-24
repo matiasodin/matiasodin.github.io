@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Social DCK - Plataforma Social Personalizada</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {
+    transition: background-color 0.3s, color 0.3s;
+  }
+  button {
+    transition: background-color 0.3s, transform 0.3s;
+    user-select: none;
+  }
+  button:hover {
+    transform: scale(1.05);
+  }
+  #btnNewPost {
+    background-color: #6366f1;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    box-shadow: 0 4px 6px rgba(99,102,241,0.5);
+    cursor: pointer;
+  }
+  #btnNewPost:hover {
+    background-color: #4f46e5;
+    box-shadow: 0 6px 10px rgba(79,70,229,0.8);
+  }
+  #app {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  .hidden {display:none;}
+  #profilePanel {
+    background: #1f2937;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    color: white;
+  }
+  #profilePanel img {
+    border-radius: 9999px;
+    border: 3px solid #818cf8;
+    width: 96px;
+    height: 96px;
+    object-fit: cover;
+    margin-bottom: 0.5rem;
+  }
+  #profileBanner {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  input, textarea {
+    width: 100%;
+    background: #374151;
+    border: none;
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+    color: white;
+    margin-top: 0.25rem;
+  }
+  textarea {
+    resize: vertical;
+  }
+  label {
+    font-weight: 600;
+    margin-top: 0.75rem;
+    display: block;
+  }
+  #feed {
+    margin-top: 2rem;
+  }
+  .post {
+    background: #374151;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  }
+  .post-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .post-header img {
+    width: 48px;
+    height: 48px;
+    border-radius: 9999px;
+    border: 2px solid #818cf8;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  .post-header img:hover {
+    transform: scale(1.2);
+  }
+  .post-username {
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: #a5b4fc;
+  }
+  .post-title {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 0.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .post-link {
+    color: #818cf8;
+    font-weight: 600;
+    text-decoration: underline;
+    word-break: break-word;
+    cursor: pointer;
+  }
+  .post-link:hover {
+    color: #a5b4fc;
+  }
+  .post-image {
+    margin-top: 0.75rem;
+    max-height: 250px;
+    object-fit: contain;
+    border-radius: 0.5rem;
+    width: 100%;
+  }
+  .interactions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  .btn-like, .btn-comment {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #818cf8;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: color 0.3s ease;
+  }
+  .btn-like.liked {
+    color: #f87171;
+  }
+  .btn-like:hover, .btn-comment:hover {
+    color: #a5b4fc;
+  }
+  .likes-avatars {
+    display: flex;
+    gap: -8px;
+  }
+  .likes-avatars img {
+    width: 28px;
+    height: 28px;
+    border-radius: 9999px;
+    border: 2px solid #f87171;
+    object-fit: cover;
+    box-shadow: 0 0 6px #f87171aa;
+    cursor: default;
+    transition: transform 0.2s ease;
+  }
+  .likes-avatars img:hover {
+    transform: scale(1.25);
+    position: relative;
+    z-index: 10;
+  }
+  .comments {
+    margin-top: 0.75rem;
+    max-height: 150px;
+    overflow-y: auto;
+    border-top: 1px solid #4b5563;
+    padding-top: 0.5rem;
+  }
+  .comment {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
+  }
+  .comment img {
+    width: 28px;
+    height: 28px;
+    border-radius: 9999px;
+    object-fit: cover;
+    border: 2px solid #a5b4fc;
+  }
+  .comment-text {
+    background: #4b5563;
+    border-radius: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    color: white;
+    max-width: 90%;
+    word-wrap: break-word;
+  }
+  .comment-form {
+    margin-top: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+  .comment-form input {
+    flex: 1;
+    background: #374151;
+    border: none;
+    border-radius: 0.375rem;
+    color: white;
+    padding: 0.5rem;
+  }
+  .comment-form button {
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 0 1rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .comment-form button:hover {
+    background: #4f46e5;
+  }
+  #modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 999;
+  }
+  #modalOverlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #modal {
+    background: #1f2937;
+    border-radius: 0.75rem;
+    width: 90%;
+    max-width: 480px;
+    padding: 1.5rem;
+    color: white;
+    position: relative;
+  }
+  #modal h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #a5b4fc;
+  }
+  #modal button.close-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+    background: transparent;
+    border: none;
+    font-size: 1.75rem;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  #modal button.close-btn:hover {
+    color: white;
+  }
+  #welcomeScreen {
+    max-width: 400px;
+    margin: 4rem auto 0;
+    background: #1f2937;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    color: white;
+    text-align: center;
+  }
+  #welcomeScreen input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    border-radius: 0.375rem;
+    border: none;
+    background: #374151;
+    color: white;
+  }
+  #welcomeScreen button {
+    margin-top: 1rem;
+    width: 100%;
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  #welcomeScreen button:hover {
+    background: #4f46e5;
+  }
+  #filterButtons {
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+  #filterButtons button {
+    background: #374151;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  #filterButtons button.active {
+    background: #6366f1;
+  }
+</style>
+</head>
+<body>
+<div id="app" class="min-h-screen">
+
+  <!-- Bienvenida (Login / Registro) -->
+  <section id="welcomeScreen">
+    <h1 class="text-3xl font-extrabold mb-4 select-none">¡Bienvenido a Social DCK!</h1>
+    <p>Ingresa tu correo para registrarte o iniciar sesión:</p>
+    <input type="email" id="inputEmail" placeholder="correo@ejemplo.com" autocomplete="off" />
+    <button id="btnEnter">Entrar</button>
+    <p id="welcomeMsg" class="mt-2 text-red-400"></p>
+  </section>
+
+  <!-- Perfil y feed (oculto hasta login) -->
+  <section id="mainApp" class="hidden">
+
+    <header class="flex justify-between items-center py-4 border-b border-gray-700">
+      <h2 class="text-indigo-400 text-3xl font-extrabold select-none">Social DCK</h2>
+      <div class="flex items-center gap-4">
+        <button id="btnNewPost">+ Publicar</button>
+        <button id="btnEditProfile" title="Editar perfil">👤 Perfil</button>
+        <button id="btnLogout" class="text-red-500 font-semibold hover:text-red-400">Salir</button>
+      </div>
+    </header>
+
+    <section id="profilePanel" class="mt-4">
+      <img id="profileBanner" src="" alt="Banner perfil" />
+      <img id="profileAvatar" src="" alt="Avatar perfil" />
+      <h3 id="profileName" class="text-2xl font-bold mt-2"></h3>
+      <p id="profileBio" class="mb-4"></p>
+      <button id="btnCustomize">🎨 Personalizar diseño</button>
+    </section>
+
+    <section id="customizePanel" class="hidden mt-4 p-4 bg-gray-800 rounded-lg text-white">
+      <label for="inputProfileBg">Color fondo página:</label>
+      <input type="color" id="inputProfileBg" value="#1f2937" />
+      <label for="inputProfileText" class="mt-2">Color texto:</label>
+      <input type="color" id="inputProfileText" value="#f9fafb" />
+      <label for="inputProfileBanner" class="mt-2">Link banner imagen/GIF:</label>
+      <input type="text" id="inputProfileBanner" placeholder="https://..." />
+      <label for="inputProfileAvatar" class="mt-2">Link avatar imagen/GIF:</label>
+      <input type="text" id="inputProfileAvatar" placeholder="https://..." />
+      <label for="inputProfileName" class="mt-2">Nombre:</label>
+      <input type="text" id="inputProfileName" />
+      <label for="inputProfileBio" class="mt-2">Descripción:</label>
+      <textarea id="inputProfileBio" rows="3"></textarea>
+      <button id="btnSaveProfile" class="mt-4 w-full bg-indigo-600 py-2 rounded-lg font-semibold hover:bg-indigo-700">Guardar perfil</button>
+      <p id="saveProfileMsg" class="mt-2 text-green-400"></p>
+    </section>
+
+    <section id="filterButtons" class="mt-6">
+      <button id="filterPopular" class="active">Más populares ❤️</button>
+      <button id="filterRecent">Recientes 🕒</button>
+    </section>
+
+    <section id="feed"></section>
+  </section>
+
+  <!-- Modal Crear Publicación -->
+  <div id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1" class="hidden fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
+    <div id="modal" class="bg-gray-800 rounded-lg w-11/12 max-w-lg p-6 text-white relative">
+      <h3 id="modalTitle" class="text-xl font-bold mb-4">Nueva publicación</h3>
+      <button id="modalCloseBtn" class="close-btn absolute top-2 right-4 text-gray-400 hover:text-white text-2xl font-bold">&times;</button>
+      <form id="postForm" class="space-y-4">
+        <label for="postTitle">Título:</label>
+        <input id="postTitle" type="text" placeholder="Título" required />
+        <label for="postLink">Link (https://):</label>
+        <input id="postLink" type="url" placeholder="https://..." required />
+        <label for="postImage">Link imagen/GIF (opcional):</label>
+        <input id="postImage" type="text" placeholder="https://..." />
+        <label for="postIcon">Ícono o emoji (opcional):</label>
+        <input id="postIcon" type="text" maxlength="3" placeholder="🔥, 😊, 🎉" />
+        <button type="submit" class="w-full bg-indigo-600 py-2 rounded-lg font-semibold hover:bg-indigo-700">Publicar</button>
+      </form>
+      <p id="postMsg" class="text-green-400 mt-2"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const welcomeScreen = document.getElementById('welcomeScreen');
+  const inputEmail = document.getElementById('inputEmail');
+  const btnEnter = document.getElementById('btnEnter');
+  const welcomeMsg = document.getElementById('welcomeMsg');
+
+  const mainApp = document.getElementById('mainApp');
+  const btnLogout = document.getElementById('btnLogout');
+  const btnNewPost = document.getElementById('btnNewPost');
+  const btnEditProfile = document.getElementById('btnEditProfile');
+  const profilePanel = document.getElementById('profilePanel');
+  const profileBanner = document.getElementById('profileBanner');
+  const profileAvatar = document.getElementById('profileAvatar');
+  const profileName = document.getElementById('profileName');
+  const profileBio = document.getElementById('profileBio');
+  const btnCustomize = document.getElementById('btnCustomize');
+  const customizePanel = document.getElementById('customizePanel');
+  const inputProfileBg = document.getElementById('inputProfileBg');
+  const inputProfileText = document.getElementById('inputProfileText');
+  const inputProfileBanner = document.getElementById('inputProfileBanner');
+  const inputProfileAvatar = document.getElementById('inputProfileAvatar');
+  const inputProfileName = document.getElementById('inputProfileName');
+  const inputProfileBio = document.getElementById('inputProfileBio');
+  const btnSaveProfile = document.getElementById('btnSaveProfile');
+  const saveProfileMsg = document.getElementById('saveProfileMsg');
+
+  const feed = document.getElementById('feed');
+  const filterPopular = document.getElementById('filterPopular');
+  const filterRecent = document.getElementById('filterRecent');
+
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalCloseBtn = document.getElementById('modalCloseBtn');
+  const postForm = document.getElementById('postForm');
+  const postTitle = document.getElementById('postTitle');
+  const postLink = document.getElementById('postLink');
+  const postImage = document.getElementById('postImage');
+  const postIcon = document.getElementById('postIcon');
+  const postMsg = document.getElementById('postMsg');
+
+  let currentUser = null;
+  let profiles = {};
+  let posts = [];
+  let currentFilter = 'popular';
+
+  function saveData() {
+    localStorage.setItem('sdck_profiles', JSON.stringify(profiles));
+    localStorage.setItem('sdck_posts', JSON.stringify(posts));
+    localStorage.setItem('sdck_currentUser', currentUser || '');
+  }
+  function loadData() {
+    profiles = JSON.parse(localStorage.getItem('sdck_profiles') || '{}');
+    posts = JSON.parse(localStorage.getItem('sdck_posts') || '[]');
+    currentUser = localStorage.getItem('sdck_currentUser') || null;
+    if(currentUser === '') currentUser = null;
+  }
+
+  function isValidEmail(email){
+    return email && email.includes('@') && email.includes('.');
+  }
+
+  function renderProfile(){
+    if(!currentUser) return;
+    const p = profiles[currentUser];
+    if(!p) return;
+    profileBanner.src = p.banner || 'https://via.placeholder.com/720x120?text=Banner';
+    profileAvatar.src = p.avatar || 'https://via.placeholder.com/96';
+    profileName.textContent = p.name || currentUser.split('@')[0];
+    profileBio.textContent = p.bio || '';
+    // Aplicar tema
+    document.body.style.backgroundColor = p.bgColor || '#1f2937';
+    document.body.style.color = p.textColor || '#f9fafb';
+
+    // Actualizar inputs personalización
+    inputProfileBg.value = p.bgColor || '#1f2937';
+    inputProfileText.value = p.textColor || '#f9fafb';
+    inputProfileBanner.value = p.banner || '';
+    inputProfileAvatar.value = p.avatar || '';
+    inputProfileName.value = p.name || '';
+    inputProfileBio.value = p.bio || '';
+  }
+
+  function renderFeed(){
+    feed.innerHTML = '';
+    if(posts.length === 0){
+      feed.innerHTML = '<p class="text-gray-400 text-center mt-10">No hay publicaciones aún.</p>';
+      return;
+    }
+
+    let postsToRender = [...posts];
+    if(currentFilter === 'popular') {
+      postsToRender.sort((a,b) => b.likes.length - a.likes.length || b.date - a.date);
+    } else {
+      postsToRender.sort((a,b) => b.date - a.date);
+    }
+
+    postsToRender.forEach(post => {
+      const profile = profiles[post.user] || {};
+      const name = profile.name || post.user;
+      const avatar = profile.avatar || 'https://via.placeholder.com/96';
+
+      const postEl = document.createElement('article');
+      postEl.className = 'post';
+
+      const dateStr = new Date(post.date).toLocaleString();
+
+      // Likes avatars
+      const likesAvatarsHTML = post.likes.slice(0,5).map(u => {
+        const p = profiles[u] || {};
+        return `<img src="${p.avatar || 'https://via.placeholder.com/96'}" alt="${p.name || u}" title="${p.name || u}" />`;
+      }).join('');
+
+      // Comentarios HTML
+      const commentsHTML = post.comments.map(c => {
+        const p = profiles[c.user] || {};
+        const cName = p.name || c.user;
+        const cAvatar = p.avatar || 'https://via.placeholder.com/96';
+        const cText = c.text;
+        return `
+          <div class="comment">
+            <img src="${cAvatar}" alt="${cName}" />
+            <div class="comment-text"><strong>${cName}:</strong> ${cText}</div>
+          </div>
+        `;
+      }).join('');
+
+      postEl.innerHTML = `
+        <div class="post-header">
+          <img src="${avatar}" alt="${name}" title="${name}" />
+          <div class="post-username">${name}</div>
+          <div class="ml-auto text-gray-400 text-sm">${dateStr}</div>
+        </div>
+        <div class="post-title">${post.icon ? post.icon + ' ' : ''}${post.title}</div>
+        <a href="${post.link}" target="_blank" rel="noopener noreferrer" class="post-link">${post.link}</a>
+        ${post.image ? `<img src="${post.image}" alt="Imagen post" class="post-image" />` : ''}
+        <div class="interactions">
+          <button class="btn-like ${post.likes.includes(currentUser) ? 'liked' : ''}" aria-label="Me gusta">❤️ <span>${post.likes.length}</span></button>
+          <button class="btn-comment" aria-label="Comentar">💬 <span>${post.comments.length}</span></button>
+          <div class="likes-avatars" title="Usuarios que dieron like">${likesAvatarsHTML}</div>
+        </div>
+        <div class="comments" style="display:none;">${commentsHTML}</div>
+        <form class="comment-form" aria-label="Agregar comentario">
+          <input type="text" placeholder="Comentar..." required maxlength="140" />
+          <button type="submit">Enviar</button>
+        </form>
+      `;
+
+      // Eventos Likes
+      const likeBtn = postEl.querySelector('.btn-like');
+      likeBtn.onclick = () => {
+        toggleLike(post.id);
+      };
+
+      // Comentarios toggle
+      const commentBtn = postEl.querySelector('.btn-comment');
+      const commentsSection = postEl.querySelector('.comments');
+      commentsSection.style.display = 'none';
+      commentBtn.onclick = () => {
+        commentsSection.style.display = commentsSection.style.display === 'none' ? 'block' : 'none';
+      };
+
+      // Agregar comentario
+      const commentForm = postEl.querySelector('.comment-form');
+      commentForm.onsubmit = e => {
+        e.preventDefault();
+        const input = commentForm.querySelector('input');
+        if(input.value.trim()){
+          addComment(post.id, input.value.trim());
+          input.value = '';
+          commentsSection.style.display = 'block';
+          renderFeed();
+        }
+      };
+
+      feed.appendChild(postEl);
+    });
+  }
+
+  function toggleLike(postId){
+    if(!currentUser) return alert('Debes iniciar sesión para dar like');
+    const post = posts.find(p => p.id === postId);
+    if(!post) return;
+    const idx = post.likes.indexOf(currentUser);
+    if(idx >= 0) post.likes.splice(idx,1);
+    else post.likes.push(currentUser);
+    saveData();
+    renderFeed();
+  }
+
+  function addComment(postId, text){
+    if(!currentUser) return alert('Debes iniciar sesión para comentar');
+    const post = posts.find(p => p.id === postId);
+    if(!post) return;
+    post.comments.push({ user: currentUser, text, date: Date.now() });
+    saveData();
+    renderFeed();
+  }
+
+  btnSaveProfile.onclick = () => {
+    if(!currentUser) return;
+    profiles[currentUser] = {
+      name: inputProfileName.value.trim() || currentUser.split('@')[0],
+      bio: inputProfileBio.value.trim(),
+      avatar: inputProfileAvatar.value.trim() || 'https://via.placeholder.com/96',
+      banner: inputProfileBanner.value.trim() || 'https://via.placeholder.com/720x120?text=Banner',
+      bgColor: inputProfileBg.value,
+      textColor: inputProfileText.value,
+    };
+    saveData();
+    saveProfileMsg.textContent = 'Perfil guardado correctamente';
+    setTimeout(() => { saveProfileMsg.textContent = ''; }, 3000);
+    renderProfile();
+  };
+
+  btnCustomize.onclick = () => {
+    customizePanel.classList.toggle('hidden');
+  };
+
+  function openModal(){
+    modalOverlay.classList.add('active');
+    postTitle.focus();
+    postMsg.textContent = '';
+    postForm.reset();
+  }
+  function closeModal(){
+    modalOverlay.classList.remove('active');
+    postMsg.textContent = '';
+  }
+  btnNewPost.onclick = () => {
+    if(!currentUser){
+      alert('Debes iniciar sesión para publicar');
+      return;
+    }
+    openModal();
+  };
+  modalCloseBtn.onclick = closeModal;
+  modalOverlay.onclick = e => {
+    if(e.target === modalOverlay) closeModal();
+  };
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && modalOverlay.classList.contains('active')) closeModal();
+  });
+
+  postForm.onsubmit = e => {
+    e.preventDefault();
+    if(!currentUser) return alert('Debes iniciar sesión para publicar');
+    const title = postTitle.value.trim();
+    const link = postLink.value.trim();
+    const image = postImage.value.trim();
+    const icon = postIcon.value.trim();
+    if(!title || !link){
+      postMsg.textContent = 'Título y link son obligatorios';
+      return;
+    }
+    posts.unshift({
+      id: Date.now(),
+      user: currentUser,
+      title,
+      link,
+      image: image || null,
+      icon: icon || null,
+      date: Date.now(),
+      likes: [],
+      comments: [],
+    });
+    saveData();
+    renderFeed();
+    closeModal();
+  };
+
+  btnEnter.onclick = () => {
+    const email = inputEmail.value.trim().toLowerCase();
+    if(!isValidEmail(email)){
+      welcomeMsg.textContent = 'Por favor ingresa un correo válido';
+      return;
+    }
+    welcomeMsg.textContent = '';
+    currentUser = email;
+    if(!profiles[currentUser]){
+      profiles[currentUser] = {
+        name: currentUser.split('@')[0],
+        bio: '',
+        avatar: 'https://via.placeholder.com/96',
+        banner: 'https://via.placeholder.com/720x120?text=Banner',
+        bgColor: '#1f2937',
+        textColor: '#f9fafb',
+      };
+      saveData();
+    }
+    loadAppForUser();
+  };
+
+  btnLogout.onclick = () => {
+    if(confirm('¿Cerrar sesión?')){
+      currentUser = null;
+      saveData();
+      mainApp.classList.add('hidden');
+      welcomeScreen.classList.remove('hidden');
+      resetApp();
+    }
+  };
+
+  function loadAppForUser(){
+    welcomeScreen.classList.add('hidden');
+    mainApp.classList.remove('hidden');
+    renderProfile();
+    renderFeed();
+    customizePanel.classList.add('hidden');
+    inputEmail.value = '';
+  }
+
+  function resetApp(){
+    document.body.style.backgroundColor = '#1f2937';
+    document.body.style.color = '#f9fafb';
+    feed.innerHTML = '';
+    profileBanner.src = '';
+    profileAvatar.src = '';
+    profileName.textContent = '';
+    profileBio.textContent = '';
+    customizePanel.classList.add('hidden');
+  }
+
+  filterPopular.onclick = () => {
+    currentFilter = 'popular';
+    filterPopular.classList.add('active');
+    filterRecent.classList.remove('active');
+    renderFeed();
+  };
+  filterRecent.onclick = () => {
+    currentFilter = 'recent';
+    filterRecent.classList.add('active');
+    filterPopular.classList.remove('active');
+    renderFeed();
+  };
+
+  loadData();
+  if(currentUser) loadAppForUser();
+
+})();
+</script>
+</body>
+</html>
