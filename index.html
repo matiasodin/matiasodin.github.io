@@ -1,506 +1,376 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SLC - Plataforma de Addons</title>
-  <style>
-    /* Reset y base */
-    * {
-      box-sizing: border-box;
-      margin: 0; padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    body {
-      background: #121212;
-      color: #eee;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-    h1, h2, h3 {
-      margin-bottom: 15px;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SLC - Plataforma Social de Addons</title>
+<style>
+  /* Reset */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: #eee; }
+  img { max-width: 100%; border-radius: 6px; }
+  button { cursor: pointer; background: #3b82f6; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; transition: background 0.3s ease; }
+  button:hover { background: #2563eb; }
+  input, textarea { padding: 8px; border-radius: 6px; border: 1px solid #555; background: #222; color: #eee; font-size: 1rem; width: 100%; }
+  textarea { resize: vertical; min-height: 70px; }
+  a { color: #3b82f6; cursor: pointer; text-decoration: underline; }
+  a:hover { color: #60a5fa; }
+  
+  /* Container */
+  #app { max-width: 900px; margin: 20px auto; padding: 20px; background: #1f2937; border-radius: 12px; box-shadow: 0 0 15px rgba(0,0,0,0.7); }
 
-    /* Botones animados */
-    .btn {
-      background: linear-gradient(135deg, #6b43f8, #b15fff);
-      border: none;
-      padding: 12px 25px;
-      border-radius: 30px;
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgb(107 67 248 / 0.5);
-      transition: transform 0.2s ease, box-shadow 0.3s ease;
-      user-select: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .btn:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 14px rgb(177 95 255 / 0.8);
-    }
-    .btn:active {
-      transform: scale(0.95);
-      box-shadow: 0 3px 6px rgb(107 67 248 / 0.6);
-    }
+  /* Sections */
+  section { display: none; }
+  section.active { display: block; animation: fadeIn 0.4s ease forwards; }
 
-    /* Contenedor principal */
-    #app {
-      max-width: 900px;
-      width: 100%;
-      background: #1e1e2f;
-      border-radius: 15px;
-      padding: 25px;
-      box-shadow: 0 0 15px #6b43f8;
-      min-height: 600px;
-    }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-    /* Secciones */
-    section {
-      display: none;
-      animation: fadeIn 0.4s ease forwards;
-    }
-    section.active {
-      display: block;
-    }
+  /* Welcome */
+  #welcome h1 {
+    font-size: 2.8rem;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #60a5fa;
+  }
+  .btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+  }
+  .btn-animated {
+    position: relative;
+    padding: 14px 30px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    border-radius: 10px;
+    overflow: hidden;
+    background: linear-gradient(45deg, #3b82f6, #2563eb);
+    box-shadow: 0 0 15px #3b82f6;
+    color: white;
+    user-select: none;
+    transition: transform 0.15s ease;
+  }
+  .btn-animated:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 25px #60a5fa;
+  }
 
-    /* Animación fadeIn */
-    @keyframes fadeIn {
-      from {opacity: 0;}
-      to {opacity: 1;}
-    }
+  /* Forms */
+  form {
+    max-width: 400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  label { font-weight: 600; color: #60a5fa; }
+  .error-msg {
+    color: #f87171;
+    font-weight: 600;
+    text-align: center;
+  }
+  .success-msg {
+    color: #4ade80;
+    font-weight: 600;
+    text-align: center;
+  }
 
-    /* Menú superior */
-    nav#main-menu {
-      display: flex;
-      justify-content: center;
-      gap: 18px;
-      margin-bottom: 25px;
-      flex-wrap: wrap;
-    }
-    nav#main-menu .btn {
-      font-size: 1rem;
-    }
+  /* Menu */
+  #menu {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  #menu button {
+    background: #2563eb;
+    font-weight: 700;
+    padding: 10px 14px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #2563eb;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+  #menu button:hover {
+    background: #1e40af;
+    box-shadow: 0 0 20px #60a5fa;
+  }
 
-    /* Inputs y form */
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      max-width: 450px;
-      margin: 0 auto 25px;
-    }
-    input[type=text], input[type=email], input[type=password], textarea, input[type=file] {
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      outline: none;
-      font-size: 1rem;
-      resize: vertical;
-    }
-    textarea {
-      min-height: 70px;
-    }
+  /* Profile */
+  #profile {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  #profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 9999px;
+    margin: 0 auto 10px;
+    display: block;
+    object-fit: cover;
+    box-shadow: 0 0 10px #3b82f6;
+  }
+  #avatar-upload {
+    display: block;
+    margin: 10px auto 30px;
+    color: #60a5fa;
+  }
+  #addons-list-profile .addon {
+    background: #374151;
+    padding: 12px 18px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  #addons-list-profile .addon strong {
+    display: block;
+    font-size: 1.2rem;
+    margin-bottom: 6px;
+    color: #93c5fd;
+  }
+  #addons-list-profile .addon p {
+    margin-bottom: 8px;
+  }
+  #addons-list-profile .addon button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #ef4444;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+  #addons-list-profile .addon button.edit-btn {
+    right: 60px;
+    background: #3b82f6;
+  }
+  .edit-form {
+    margin-top: 10px;
+    background: #1e293b;
+    padding: 12px;
+    border-radius: 10px;
+  }
+  .edit-form input, .edit-form textarea {
+    margin-bottom: 8px;
+  }
+  .edit-form button {
+    width: 48%;
+  }
+  .edit-form button:first-child {
+    margin-right: 4%;
+  }
 
-    /* Mensajes de error o feedback */
-    .error, .feedback {
-      color: #ff6b6b;
-      font-weight: 600;
-      text-align: center;
-      margin-top: 10px;
-    }
-    .success {
-      color: #a4f9a4;
-      font-weight: 600;
-      text-align: center;
-      margin-top: 10px;
-    }
+  /* Upload Addon */
+  #upload-addon-form {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  #upload-feedback {
+    text-align: center;
+    margin-top: 10px;
+    font-weight: 700;
+    color: #4ade80;
+  }
 
-    /* Avatar */
-    #avatar-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    #avatar {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      object-fit: cover;
-      box-shadow: 0 0 10px #b15fff;
-      margin-bottom: 8px;
-      background: #333;
-    }
+  /* Addons List */
+  #addons-list-recent, #addons-list-search {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(240px,1fr));
+    gap: 16px;
+  }
+  .addon {
+    background: #374151;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 0 8px #2563eb;
+    position: relative;
+  }
+  .addon img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 8px;
+  }
+  .addon-details strong {
+    font-size: 1.2rem;
+    color: #93c5fd;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .addon-details p {
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
+  .like-btn {
+    background: #ef4444;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 6px 10px;
+    font-weight: 700;
+    border-radius: 8px;
+    box-shadow: 0 0 6px #ef4444;
+  }
+  .like-btn:hover {
+    background: #dc2626;
+    box-shadow: 0 0 14px #dc2626;
+  }
 
-    /* Addons list */
-    .addon {
-      display: flex;
-      background: #29294d;
-      border-radius: 12px;
-      margin-bottom: 15px;
-      overflow: hidden;
-      box-shadow: 0 0 12px rgb(177 95 255 / 0.4);
-    }
-    .addon img {
-      width: 120px;
-      height: 100px;
-      object-fit: cover;
-      border-right: 2px solid #6b43f8;
-    }
-    .addon-details {
-      flex-grow: 1;
-      padding: 12px 15px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .addon-details h3 {
-      color: #b15fff;
-      font-weight: 700;
-    }
-    .addon-details p {
-      font-size: 0.9rem;
-      margin-top: 4px;
-      flex-grow: 1;
-    }
-    .addon-meta {
-      font-size: 0.8rem;
-      color: #bbb;
-      margin-top: 6px;
-      font-style: italic;
-    }
+  /* Search */
+  #search-bar {
+    max-width: 500px;
+    margin: 0 auto 20px;
+    display: flex;
+    gap: 10px;
+  }
+  #search-bar input {
+    flex: 1;
+  }
 
-    /* Addon acciones (likes, editar, borrar) */
-    .addon-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding: 10px 12px;
-      justify-content: flex-start;
-      align-items: center;
-      background: #3a3a6b;
-      min-width: 100px;
-      color: #eee;
+  /* Responsive */
+  @media (max-width: 600px) {
+    #menu { flex-wrap: wrap; }
+    #addons-list-recent, #addons-list-search {
+      grid-template-columns: 1fr;
     }
-    .addon-actions .like-btn {
-      cursor: pointer;
-      user-select: none;
-      font-size: 1.5rem;
-      color: #ff6b6b;
-      transition: transform 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .addon-actions .like-btn.liked {
-      color: #ff1a75;
-      transform: scale(1.2);
-      text-shadow: 0 0 6px #ff1a75;
-    }
-    .addon-actions button {
-      background: linear-gradient(135deg, #ff6b6b, #ff1a75);
-      border: none;
-      border-radius: 15px;
-      padding: 6px 12px;
-      color: white;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: background 0.3s ease;
-      width: 100%;
-    }
-    .addon-actions button:hover {
-      background: linear-gradient(135deg, #ff1a75, #ff6b6b);
-    }
-
-    /* Comentarios */
-    .comments {
-      background: #222244;
-      border-radius: 12px;
-      margin-top: 12px;
-      padding: 10px 12px;
-      max-height: 180px;
-      overflow-y: auto;
-    }
-    .comment {
-      font-size: 0.85rem;
-      margin-bottom: 8px;
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-    .comment-user {
-      font-weight: 700;
-      color: #b15fff;
-    }
-    .comment-text {
-      color: #ddd;
-      flex-grow: 1;
-    }
-    .comment-form {
-      margin-top: 10px;
-      display: flex;
-      gap: 6px;
-    }
-    .comment-form input[type=text] {
-      flex-grow: 1;
-      border-radius: 20px;
-      padding: 8px 15px;
-      font-size: 0.9rem;
-      border: none;
-      outline: none;
-    }
-    .comment-form button {
-      border-radius: 20px;
-      background: #b15fff;
-      border: none;
-      padding: 8px 16px;
-      color: white;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background 0.3s ease;
-    }
-    .comment-form button:hover {
-      background: #6b43f8;
-    }
-
-    /* Header sesión */
-    #user-header {
-      margin-bottom: 18px;
-      text-align: center;
-      color: #b15fff;
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-    #user-header button {
-      margin-left: 15px;
-      font-size: 0.9rem;
-      background: none;
-      border: 1px solid #b15fff;
-      padding: 5px 12px;
-      border-radius: 15px;
-      color: #b15fff;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    #user-header button:hover {
-      background: #6b43f8;
-      color: white;
-      border-color: #6b43f8;
-    }
-
-    /* Pantalla bienvenida */
-    #welcome-screen {
-      text-align: center;
-    }
-    #welcome-screen h1 {
-      font-size: 3rem;
-      margin-bottom: 30px;
-      color: #b15fff;
-      text-shadow: 0 0 10px #b15fff;
-    }
-    #welcome-screen .btn {
-      margin: 8px;
-      font-size: 1.2rem;
-    }
-
-    /* Mensajes error general */
-    .error-msg {
-      color: #ff6b6b;
-      font-weight: 700;
-      margin: 10px 0;
-      text-align: center;
-    }
-
-  </style>
+  }
+</style>
 </head>
 <body>
+  <div id="app">
 
-<div id="app">
+    <!-- Bienvenida -->
+    <section id="welcome" class="active">
+      <h1>🎉 Bienvenido a <span style="color:#60a5fa">SLC</span> 🎉</h1>
+      <div class="btn-group">
+        <button id="btn-show-login" class="btn-animated">🔐 Iniciar sesión</button>
+        <button id="btn-show-register" class="btn-animated">📝 Registrarse</button>
+      </div>
+    </section>
 
-  <!-- Cabecera usuario -->
-  <div id="user-header" class="hidden">
-    Usuario: <span id="user-email"></span>
-    <button id="btn-logout" title="Cerrar sesión">Cerrar sesión</button>
+    <!-- Login -->
+    <section id="login">
+      <h2>Iniciar sesión</h2>
+      <form id="login-form">
+        <label for="login-email">Correo</label>
+        <input id="login-email" type="email" required placeholder="tu@email.com" />
+        <label for="login-password">Contraseña</label>
+        <input id="login-password" type="password" required minlength="6" />
+        <div id="login-error" class="error-msg"></div>
+        <button type="submit" class="btn-animated">Entrar</button>
+      </form>
+      <p style="text-align:center; margin-top:10px;">
+        ¿No tienes cuenta? <a id="link-to-register">Regístrate aquí</a>
+      </p>
+      <button id="btn-back-to-welcome" class="btn-animated" style="margin-top:20px;">🔙 Volver</button>
+    </section>
+
+    <!-- Registro -->
+    <section id="register">
+      <h2>Registrarse</h2>
+      <form id="register-form">
+        <label for="register-email">Correo</label>
+        <input id="register-email" type="email" required placeholder="tu@email.com" />
+        <label for="register-password">Contraseña</label>
+        <input id="register-password" type="password" required minlength="6" />
+        <div id="register-error" class="error-msg"></div>
+        <button type="submit" class="btn-animated">Crear cuenta</button>
+      </form>
+      <p style="text-align:center; margin-top:10px;">
+        ¿Ya tienes cuenta? <a id="link-to-login">Inicia sesión aquí</a>
+      </p>
+      <button id="btn-back-to-welcome2" class="btn-animated" style="margin-top:20px;">🔙 Volver</button>
+    </section>
+
+    <!-- Menú principal -->
+    <nav id="menu" class="hidden" aria-label="Navegación principal">
+      <button id="btn-profile">👤 Perfil</button>
+      <button id="btn-upload">📤 Subir addon</button>
+      <button id="btn-search">🔎 Buscar addon</button>
+      <button id="btn-addon-list">📚 Lista de addons</button>
+      <button id="btn-discord">💬 Discord</button>
+      <button id="btn-logout">🚪 Cerrar sesión</button>
+    </nav>
+
+    <!-- Perfil -->
+    <section id="profile" class="hidden" aria-label="Perfil de usuario">
+      <img id="profile-avatar" src="https://via.placeholder.com/120" alt="Avatar de usuario" />
+      <input type="file" id="avatar-upload" accept="image/*,image/gif" title="Cambiar avatar" />
+      <h3>Tus addons</h3>
+      <div id="addons-list-profile"></div>
+    </section>
+
+    <!-- Subir addon -->
+    <section id="upload" class="hidden" aria-label="Subir nuevo addon">
+      <h2>Subir addon</h2>
+      <form id="upload-addon-form">
+        <label for="addon-name">Nombre del addon</label>
+        <input id="addon-name" type="text" required maxlength="50" />
+        <label for="addon-description">Descripción</label>
+        <textarea id="addon-description" maxlength="300"></textarea>
+        <label for="addon-file">Archivo del addon (.zip, .mcpack...)</label>
+        <input id="addon-file" type="file" required />
+        <label for="addon-image">Imagen o GIF</label>
+        <input id="addon-image" type="file" accept="image/*,image/gif" />
+        <button type="submit" class="btn-animated">📤 Subir</button>
+        <div id="upload-feedback"></div>
+      </form>
+    </section>
+
+    <!-- Buscar addon -->
+    <section id="search" class="hidden" aria-label="Buscar addons">
+      <h2>Buscar addon</h2>
+      <div id="search-bar">
+        <input id="search-text" type="text" placeholder="Buscar por nombre o autor..." />
+        <button id="btn-do-search" class="btn-animated">Buscar</button>
+      </div>
+      <div id="addons-list-search"></div>
+    </section>
+
+    <!-- Lista general de addons -->
+    <section id="addonList" class="hidden" aria-label="Lista general de addons">
+      <h2>Addons recientes</h2>
+      <div id="addons-list-recent"></div>
+    </section>
+
   </div>
 
-  <!-- Menú principal -->
-  <nav id="main-menu" class="hidden">
-    <button class="btn" id="btn-profile">👤 Perfil</button>
-    <button class="btn" id="btn-upload">⬆️ Subir addon</button>
-    <button class="btn" id="btn-search">🔍 Buscar addon</button>
-    <button class="btn" id="btn-addon-list">📦 Addons recientes</button>
-    <button class="btn" id="btn-discord">💬 Discord</button>
-  </nav>
-
-  <!-- Pantalla bienvenida -->
-  <section id="welcome-screen" class="active">
-    <h1>Bienvenido a SLC</h1>
-    <button id="btn-show-login" class="btn">🔑 Iniciar sesión</button>
-    <button id="btn-show-register" class="btn">📝 Registrarse</button>
-  </section>
-
-  <!-- Login -->
-  <section id="login-screen">
-    <h2>Iniciar sesión 🔑</h2>
-    <form id="login-form">
-      <input type="email" id="login-email" placeholder="Correo electrónico" required />
-      <input type="password" id="login-password" placeholder="Contraseña" required />
-      <button type="submit" class="btn">Entrar</button>
-      <p class="error-msg" id="login-error"></p>
-      <p>
-        ¿No tienes cuenta? <a href="#" id="link-to-register">Regístrate aquí</a>
-      </p>
-      <button class="btn" id="btn-back-to-welcome">Volver</button>
-    </form>
-  </section>
-
-  <!-- Registro -->
-  <section id="register-screen">
-    <h2>Registrarse 📝</h2>
-    <form id="register-form">
-      <input type="email" id="register-email" placeholder="Correo electrónico" required />
-      <input type="password" id="register-password" placeholder="Contraseña" required minlength="6" />
-      <button type="submit" class="btn">Crear cuenta</button>
-      <p class="error-msg" id="register-error"></p>
-      <p>
-        ¿Ya tienes cuenta? <a href="#" id="link-to-login">Inicia sesión aquí</a>
-      </p>
-      <button class="btn" id="btn-back-to-welcome2">Volver</button>
-    </form>
-  </section>
-
-  <!-- Perfil -->
-  <section id="profile" class="hidden">
-    <h2>👤 Perfil de <span id="profile-email"></span></h2>
-    <div id="avatar-container">
-      <img id="avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Avatar" />
-      <br />
-      <label for="avatar-upload" id="avatar-upload-label" class="btn no-shine" style="display:inline-flex; margin-top:10px;">
-        📷 Cambiar avatar
-      </label>
-      <input type="file" id="avatar-upload" accept="image/*,image/gif" />
-    </div>
-
-    <h3>📦 Mis addons subidos</h3>
-    <div id="addons-list-profile">
-      <!-- Addons del usuario aparecerán aquí -->
-    </div>
-  </section>
-
-  <!-- Subir addon -->
-  <section id="upload" class="hidden">
-    <h2>⬆️ Subir nuevo addon</h2>
-    <form id="upload-addon-form">
-      <label for="addon-name">Nombre del addon</label>
-      <input type="text" id="addon-name" required maxlength="50" placeholder="Nombre..." />
-      <label for="addon-description">Descripción</label>
-      <textarea id="addon-description" required maxlength="300" placeholder="Descripción..."></textarea>
-      <label for="addon-file">Archivo del addon</label>
-      <input type="file" id="addon-file" accept=".zip,.json" required />
-      <label for="addon-image">Imagen o GIF representativo</label>
-      <input type="file" id="addon-image" accept="image/*,image/gif" />
-      <button type="submit" class="btn no-shine">Publicar 🎉</button>
-    </form>
-    <div id="upload-feedback" class="feedback"></div>
-  </section>
-
-  <!-- Buscar addon -->
-  <section id="search" class="hidden">
-    <h2>🔍 Buscar addons</h2>
-    <div id="search-addon" style="margin-bottom: 15px;">
-      <input type="text" id="search-text" placeholder="Buscar por nombre o autor..." style="width:70%; padding:8px; border-radius: 15px; border:none;"/>
-      <button id="btn-do-search" class="btn" style="padding: 9px 15px; font-weight: 700;">Buscar</button>
-    </div>
-    <div id="addons-list-search">
-      <!-- Resultados de búsqueda -->
-    </div>
-  </section>
-
-  <!-- Addons recientes -->
-  <section id="addon-list" class="hidden">
-    <h2>📦 Addons recientes</h2>
-    <div id="addons-list-recent">
-      <!-- Lista addons recientes -->
-    </div>
-  </section>
-
-</div>
-
 <script>
-  // Claves almacenamiento
-  const STORAGE_KEYS = {
-    USERS: 'slc_users',
-    SESSION: 'slc_session',
-    ADDONS: 'slc_addons'
-  };
+  // --- VARIABLES Y UTILIDADES ---
+  const STORAGE_KEYS = { USERS: 'slc_users', SESSION: 'slc_session', ADDONS: 'slc_addons' };
+  let session = JSON.parse(localStorage.getItem(STORAGE_KEYS.SESSION)) || null;
+  let users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS)) || {};
+  let addons = JSON.parse(localStorage.getItem(STORAGE_KEYS.ADDONS)) || [];
 
-  // Cargar y guardar datos en localStorage
-  function loadData(key, defaultVal) {
-    try {
-      const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : defaultVal;
-    } catch {
-      return defaultVal;
-    }
+  function saveData(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
   }
-  function saveData(key, val) {
-    localStorage.setItem(key, JSON.stringify(val));
-  }
-
-  // Datos
-  let users = loadData(STORAGE_KEYS.USERS, []);
-  let session = loadData(STORAGE_KEYS.SESSION, null);
-  let addons = loadData(STORAGE_KEYS.ADDONS, []);
-
-  // Referencias DOM
-  const sections = {
-    welcome: document.getElementById('welcome-screen'),
-    login: document.getElementById('login-screen'),
-    register: document.getElementById('register-screen'),
-    profile: document.getElementById('profile'),
-    upload: document.getElementById('upload'),
-    search: document.getElementById('search'),
-    addonList: document.getElementById('addon-list')
-  };
-  const mainMenu = document.getElementById('main-menu');
-  const userHeader = document.getElementById('user-header');
-  const userEmailSpan = document.getElementById('user-email');
-
-  // Mostrar sección y ocultar otras
-  function showSection(name) {
-    for (const key in sections) {
-      if (sections[key]) {
-        if (key === name) {
-          sections[key].classList.add('active');
-          sections[key].classList.remove('hidden');
-        } else {
-          sections[key].classList.remove('active');
-          sections[key].classList.add('hidden');
-        }
-      }
-    }
+  function showSection(id) {
+    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+    const sec = document.getElementById(id);
+    if (sec) sec.classList.add('active');
   }
   function showAppUI(show) {
-    if(show) {
-      mainMenu.classList.remove('hidden');
-      userHeader.classList.remove('hidden');
-    } else {
-      mainMenu.classList.add('hidden');
-      userHeader.classList.add('hidden');
-    }
+    const menu = document.getElementById('menu');
+    if (!menu) return;
+    menu.classList.toggle('hidden', !show);
+    if (!show) showSection('welcome');
   }
 
-  // Login flow
+  // --- REGISTRO Y LOGIN ---
+  function register(email, password) {
+    if (users[email]) return 'Ese correo ya está registrado';
+    if (password.length < 6) return 'La contraseña debe tener al menos 6 caracteres';
+    users[email] = { email, password, avatar: '', addons: [] };
+    saveData(STORAGE_KEYS.USERS, users);
+    return null;
+  }
   function login(email, password) {
-    const user = users.find(u => u.email === email);
-    if(!user) return 'Usuario no encontrado';
-    if(user.password !== password) return 'Contraseña incorrecta';
+    const user = users[email];
+    if (!user) return 'Usuario no encontrado';
+    if (user.password !== password) return 'Contraseña incorrecta';
     session = { email };
     saveData(STORAGE_KEYS.SESSION, session);
     return null;
@@ -508,452 +378,293 @@
   function logout() {
     session = null;
     saveData(STORAGE_KEYS.SESSION, null);
+    showAppUI(false);
   }
-  function register(email, password) {
-    if(users.find(u => u.email === email)) return 'El correo ya está registrado';
-    users.push({ email, password, avatar: null });
+
+  // --- PERFIL ---
+  function loadProfile() {
+    if (!session) return;
+    const user = users[session.email];
+    if (!user) return;
+    const avatar = document.getElementById('profile-avatar');
+    const addonsList = document.getElementById('addons-list-profile');
+    avatar.src = user.avatar || 'https://via.placeholder.com/120';
+    addonsList.innerHTML = '';
+    user.addons.forEach(idx => {
+      const addon = addons[idx];
+      if (!addon) return;
+      const div = document.createElement('div');
+      div.className = 'addon';
+      div.innerHTML = `
+        <strong>${addon.name}</strong>
+        <p>${addon.description}</p>
+        <button class="edit-btn" onclick="showEditForm(${idx})">✏️ Editar</button>
+        <button onclick="deleteAddon(${idx})">🗑️ Eliminar</button>
+        <div id="edit-form-${idx}" class="edit-form hidden" style="display:none;">
+          <input type="text" id="edit-name-${idx}" value="${addon.name}" maxlength="50" />
+          <textarea id="edit-desc-${idx}" maxlength="300">${addon.description}</textarea>
+          <button onclick="saveEdit(${idx})">Guardar</button>
+          <button onclick="cancelEdit(${idx})">Cancelar</button>
+        </div>
+      `;
+      addonsList.appendChild(div);
+    });
+  }
+
+  function deleteAddon(index) {
+    if (!session) return;
+    const user = users[session.email];
+    if (!user) return;
+    addons.splice(index, 1);
+    // Eliminar índice del addon de usuario
+    user.addons = user.addons.filter(i => i !== index);
+    // Reajustar índices para otros usuarios
+    for (const u in users) {
+      users[u].addons = users[u].addons.map(i => i > index ? i - 1 : i);
+    }
+    saveData(STORAGE_KEYS.ADDONS, addons);
     saveData(STORAGE_KEYS.USERS, users);
-    return null;
+    loadProfile();
   }
 
-  // Avatar
-  function getAvatar(email) {
-    const user = users.find(u => u.email === email);
-    return user && user.avatar ? user.avatar : 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
+  // Mostrar formulario de edición
+  function showEditForm(idx) {
+    document.getElementById(`edit-form-${idx}`).style.display = 'block';
   }
-  function setAvatar(email, base64) {
-    const user = users.find(u => u.email === email);
-    if(user) {
-      user.avatar = base64;
+  // Cancelar edición
+  function cancelEdit(idx) {
+    document.getElementById(`edit-form-${idx}`).style.display = 'none';
+  }
+  // Guardar edición
+  function saveEdit(idx) {
+    const newName = document.getElementById(`edit-name-${idx}`).value.trim();
+    const newDesc = document.getElementById(`edit-desc-${idx}`).value.trim();
+    if (newName === '') return alert('El nombre no puede estar vacío');
+    addons[idx].name = newName;
+    addons[idx].description = newDesc;
+    saveData(STORAGE_KEYS.ADDONS, addons);
+    cancelEdit(idx);
+    loadProfile();
+  }
+
+  // Cambiar avatar
+  document.getElementById('avatar-upload').addEventListener('change', e => {
+    if (!session) return alert('Debes iniciar sesión');
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      users[session.email].avatar = reader.result;
       saveData(STORAGE_KEYS.USERS, users);
-    }
-  }
+      loadProfile();
+    };
+    reader.readAsDataURL(file);
+  });
 
-  // Render avatar perfil
-  const avatarImg = document.getElementById('avatar');
-  function renderAvatar() {
-    if(!session) return;
-    avatarImg.src = getAvatar(session.email);
-  }
+  // --- SUBIR ADDON ---
+  document.getElementById('upload-addon-form').addEventListener('submit', e => {
+    e.preventDefault();
+    if (!session) return alert('Debes iniciar sesión para subir addons');
+    const name = document.getElementById('addon-name').value.trim();
+    const description = document.getElementById('addon-description').value.trim();
+    const fileInput = document.getElementById('addon-file');
+    const imgInput = document.getElementById('addon-image');
 
-  // Mostrar addons del usuario en perfil
-  const addonsListProfile = document.getElementById('addons-list-profile');
-  function renderUserAddons() {
-    if(!session) return;
-    addonsListProfile.innerHTML = '';
-    const userAddons = addons.filter(a => a.author === session.email);
-    if(userAddons.length === 0) {
-      addonsListProfile.innerHTML = '<p>No has subido ningún addon aún.</p>';
+    if (!name || !fileInput.files[0]) {
+      alert('Nombre y archivo son obligatorios');
       return;
     }
-    userAddons.forEach(addon => {
-      addonsListProfile.appendChild(createAddonElement(addon, true));
+
+    const readerFile = new FileReader();
+    readerFile.onload = () => {
+      let imgData = '';
+      if (imgInput.files[0]) {
+        const readerImg = new FileReader();
+        readerImg.onload = () => {
+          imgData = readerImg.result;
+          saveAddon(name, description, readerFile.result, imgData);
+        };
+        readerImg.readAsDataURL(imgInput.files[0]);
+      } else {
+        saveAddon(name, description, readerFile.result, imgData);
+      }
+    };
+    readerFile.readAsDataURL(fileInput.files[0]);
+  });
+
+  function saveAddon(name, description, fileData, imgData) {
+    const newAddon = {
+      name, description, fileData, imgData,
+      author: session.email,
+      date: new Date().toISOString(),
+      likes: 0,
+      comments: []
+    };
+    addons.push(newAddon);
+    users[session.email].addons.push(addons.length -1);
+    saveData(STORAGE_KEYS.ADDONS, addons);
+    saveData(STORAGE_KEYS.USERS, users);
+    document.getElementById('upload-addon-form').reset();
+    document.getElementById('upload-feedback').textContent = '¡Addon subido con éxito! 🎉';
+  }
+
+  // --- BUSCAR ADDON ---
+  document.getElementById('btn-do-search').addEventListener('click', () => {
+    const text = document.getElementById('search-text').value.trim().toLowerCase();
+    const container = document.getElementById('addons-list-search');
+    container.innerHTML = '';
+    if (!text) return alert('Escribe algo para buscar');
+    const results = addons
+      .map((addon, i) => ({...addon, index: i}))
+      .filter(a => a.name.toLowerCase().includes(text) || a.author.toLowerCase().includes(text));
+    if (results.length === 0) {
+      container.textContent = 'No se encontraron addons.';
+      return;
+    }
+    results.forEach(addon => {
+      const div = document.createElement('div');
+      div.className = 'addon';
+      div.innerHTML = `
+        <img src="${addon.imgData || 'https://via.placeholder.com/240x130'}" alt="Imagen addon" />
+        <div class="addon-details">
+          <strong>${addon.name}</strong>
+          <p>Autor: ${addon.author}</p>
+          <p>${addon.description}</p>
+          <p>Subido: ${new Date(addon.date).toLocaleDateString()}</p>
+        </div>
+        <button class="like-btn" onclick="likeAddon(${addon.index})">❤️ ${addon.likes}</button>
+      `;
+      container.appendChild(div);
+    });
+  });
+
+  // --- LISTA GENERAL DE ADDONS RECIENTES ---
+  function listAddons(id) {
+    const container = document.getElementById(id);
+    if (!container) return;
+    container.innerHTML = '';
+    const recent = addons.slice(-12).reverse();
+    recent.forEach((addon, i) => {
+      const idx = addons.length - 1 - i;
+      const div = document.createElement('div');
+      div.className = 'addon';
+      div.innerHTML = `
+        <img src="${addon.imgData || 'https://via.placeholder.com/240x130'}" alt="Imagen addon" />
+        <div class="addon-details">
+          <strong>${addon.name}</strong>
+          <p>Autor: ${addon.author}</p>
+          <p>${addon.description}</p>
+          <p>Subido: ${new Date(addon.date).toLocaleDateString()}</p>
+        </div>
+        <button class="like-btn" onclick="likeAddon(${idx})">❤️ ${addon.likes}</button>
+      `;
+      container.appendChild(div);
     });
   }
 
-  // Crear elemento addon (usado en perfil y búsqueda)
-  // editable = true permite editar y borrar en perfil
-  function createAddonElement(addon, editable = false) {
-    const div = document.createElement('div');
-    div.className = 'addon';
-
-    // Imagen
-    const img = document.createElement('img');
-    img.src = addon.image || 'https://cdn-icons-png.flaticon.com/512/190/190411.png';
-    img.alt = addon.name;
-    div.appendChild(img);
-
-    // Detalles
-    const details = document.createElement('div');
-    details.className = 'addon-details';
-
-    const h3 = document.createElement('h3');
-    h3.textContent = addon.name;
-    details.appendChild(h3);
-
-    const desc = document.createElement('p');
-    desc.textContent = addon.description;
-    details.appendChild(desc);
-
-    const meta = document.createElement('div');
-    meta.className = 'addon-meta';
-    const date = new Date(addon.date);
-    meta.textContent = `Por ${addon.author} · Subido: ${date.toLocaleString()}`;
-    details.appendChild(meta);
-
-    // Comentarios
-    const commentsDiv = document.createElement('div');
-    commentsDiv.className = 'comments';
-    if(addon.comments.length === 0) {
-      commentsDiv.textContent = 'Sin comentarios aún.';
-    } else {
-      addon.comments.forEach(c => {
-        const cDiv = document.createElement('div');
-        cDiv.className = 'comment';
-        const userSpan = document.createElement('span');
-        userSpan.className = 'comment-user';
-        userSpan.textContent = c.user + ':';
-        const textSpan = document.createElement('span');
-        textSpan.className = 'comment-text';
-        textSpan.textContent = c.text;
-        cDiv.appendChild(userSpan);
-        cDiv.appendChild(textSpan);
-        commentsDiv.appendChild(cDiv);
-      });
-    }
-    details.appendChild(commentsDiv);
-
-    // Form para agregar comentario si hay sesión
-    if(session) {
-      const commentForm = document.createElement('form');
-      commentForm.className = 'comment-form';
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.placeholder = 'Agregar comentario...';
-      input.required = true;
-      commentForm.appendChild(input);
-      const btn = document.createElement('button');
-      btn.type = 'submit';
-      btn.textContent = 'Enviar';
-      commentForm.appendChild(btn);
-      commentForm.addEventListener('submit', e => {
-        e.preventDefault();
-        const text = input.value.trim();
-        if(text.length < 2) return alert('El comentario es muy corto');
-        addon.comments.push({ user: session.email, text });
-        saveData(STORAGE_KEYS.ADDONS, addons);
-        renderUserAddons();
-        renderAddonsSearch(document.getElementById('search-text').value.trim());
-        renderRecentAddons();
-      });
-      details.appendChild(commentForm);
-    }
-
-    div.appendChild(details);
-
-    // Acciones
-    if(editable) {
-      const actions = document.createElement('div');
-      actions.className = 'addon-actions';
-
-      // Likes con animación
-      const likeBtn = document.createElement('div');
-      likeBtn.className = 'like-btn';
-      likeBtn.innerHTML = `❤️ ${addon.likes.length}`;
-      if(session && addon.likes.includes(session.email)) likeBtn.classList.add('liked');
-      likeBtn.onclick = () => {
-        if(!session) return alert('Debes iniciar sesión para dar like');
-        const likedIndex = addon.likes.indexOf(session.email);
-        if(likedIndex >= 0) {
-          addon.likes.splice(likedIndex, 1);
-        } else {
-          addon.likes.push(session.email);
-        }
-        saveData(STORAGE_KEYS.ADDONS, addons);
-        renderUserAddons();
-        renderAddonsSearch(document.getElementById('search-text').value.trim());
-        renderRecentAddons();
-      };
-      actions.appendChild(likeBtn);
-
-      // Editar (solo demo, alerta)
-      const btnEdit = document.createElement('button');
-      btnEdit.textContent = 'Editar';
-      btnEdit.onclick = () => alert('Funcionalidad editar aún no implementada');
-      actions.appendChild(btnEdit);
-
-      // Borrar
-      const btnDelete = document.createElement('button');
-      btnDelete.textContent = 'Borrar';
-      btnDelete.onclick = () => {
-        if(confirm('¿Seguro que quieres borrar este addon?')) {
-          const idx = addons.findIndex(a => a.id === addon.id);
-          if(idx >= 0) {
-            addons.splice(idx, 1);
-            saveData(STORAGE_KEYS.ADDONS, addons);
-            renderUserAddons();
-            renderAddonsSearch(document.getElementById('search-text').value.trim());
-            renderRecentAddons();
-          }
-        }
-      };
-      actions.appendChild(btnDelete);
-
-      div.appendChild(actions);
-    } else {
-      // Para vista no editable (buscar o recientes) solo like
-      const actions = document.createElement('div');
-      actions.className = 'addon-actions';
-      const likeBtn = document.createElement('div');
-      likeBtn.className = 'like-btn';
-      likeBtn.innerHTML = `❤️ ${addon.likes.length}`;
-      if(session && addon.likes.includes(session.email)) likeBtn.classList.add('liked');
-      likeBtn.onclick = () => {
-        if(!session) return alert('Debes iniciar sesión para dar like');
-        const likedIndex = addon.likes.indexOf(session.email);
-        if(likedIndex >= 0) {
-          addon.likes.splice(likedIndex, 1);
-        } else {
-          addon.likes.push(session.email);
-        }
-        saveData(STORAGE_KEYS.ADDONS, addons);
-        renderUserAddons();
-        renderAddonsSearch(document.getElementById('search-text').value.trim());
-        renderRecentAddons();
-      };
-      actions.appendChild(likeBtn);
-      div.appendChild(actions);
-    }
-
-    return div;
-  }
-
-  // Render búsqueda addons
-  const addonsListSearch = document.getElementById('addons-list-search');
-  function renderAddonsSearch(filter) {
-    addonsListSearch.innerHTML = '';
-    let filtered = addons;
-    if(filter) {
-      const low = filter.toLowerCase();
-      filtered = addons.filter(a => a.name.toLowerCase().includes(low) || a.author.toLowerCase().includes(low));
-    }
-    if(filtered.length === 0) {
-      addonsListSearch.innerHTML = '<p>No se encontraron addons.</p>';
-      return;
-    }
-    filtered.forEach(addon => {
-      addonsListSearch.appendChild(createAddonElement(addon));
+  // --- DAR LIKE ---
+  function likeAddon(idx) {
+    if (!session) return alert('Debes iniciar sesión para dar like');
+    addons[idx].likes++;
+    saveData(STORAGE_KEYS.ADDONS, addons);
+    // Actualizar listas visibles
+    listAddons('addons-list-recent');
+    document.getElementById('addons-list-search').querySelectorAll('.like-btn').forEach(btn => {
+      // Actualizar si está en búsqueda
+      if (btn.onclick) btn.onclick();
     });
   }
+  window.likeAddon = likeAddon; // Para acceso global
 
-  // Render addons recientes (botón Addon)
-  const addonsListRecent = document.getElementById('addons-list-recent');
-  function renderRecentAddons() {
-    addonsListRecent.innerHTML = '';
-    // Ordenar por fecha descendente
-    const sorted = [...addons].sort((a,b) => new Date(b.date) - new Date(a.date));
-    if(sorted.length === 0) {
-      addonsListRecent.innerHTML = '<p>No hay addons subidos aún.</p>';
-      return;
-    }
-    sorted.forEach(addon => {
-      addonsListRecent.appendChild(createAddonElement(addon));
-    });
-  }
+  // --- NAVEGACIÓN ---
+  document.getElementById('btn-show-login').onclick = () => {
+    showSection('login');
+  };
+  document.getElementById('btn-show-register').onclick = () => {
+    showSection('register');
+  };
+  document.getElementById('link-to-register').onclick = () => {
+    showSection('register');
+  };
+  document.getElementById('link-to-login').onclick = () => {
+    showSection('login');
+  };
+  document.getElementById('btn-back-to-welcome').onclick = () => {
+    showSection('welcome');
+  };
+  document.getElementById('btn-back-to-welcome2').onclick = () => {
+    showSection('welcome');
+  };
 
-  // Eventos botones menú
+  // Menú botones
   document.getElementById('btn-profile').onclick = () => {
-    if(!session) return alert('Debes iniciar sesión');
     showSection('profile');
-    renderAvatar();
-    renderUserAddons();
+    loadProfile();
   };
   document.getElementById('btn-upload').onclick = () => {
-    if(!session) return alert('Debes iniciar sesión');
     showSection('upload');
     document.getElementById('upload-feedback').textContent = '';
-    document.getElementById('upload-addon-form').reset();
   };
   document.getElementById('btn-search').onclick = () => {
     showSection('search');
-    renderAddonsSearch('');
+    document.getElementById('addons-list-search').innerHTML = '';
     document.getElementById('search-text').value = '';
   };
   document.getElementById('btn-addon-list').onclick = () => {
     showSection('addonList');
-    renderRecentAddons();
+    listAddons('addons-list-recent');
   };
   document.getElementById('btn-discord').onclick = () => {
     window.open('https://discord.gg/Pm3W6gJunx', '_blank');
   };
-
-  // Mostrar pantalla bienvenida
-  function showWelcome() {
-    showAppUI(false);
-    showSection('welcome');
-  }
-
-  // Form login
-  document.getElementById('btn-show-login').onclick = () => {
-    showAppUI(false);
-    showSection('login');
-    document.getElementById('login-error').textContent = '';
-    document.getElementById('login-form').reset();
-  };
-  document.getElementById('btn-show-register').onclick = () => {
-    showAppUI(false);
-    showSection('register');
-    document.getElementById('register-error').textContent = '';
-    document.getElementById('register-form').reset();
-  };
-  document.getElementById('link-to-register').onclick = e => {
-    e.preventDefault();
-    document.getElementById('register-error').textContent = '';
-    showSection('register');
-  };
-  document.getElementById('link-to-login').onclick = e => {
-    e.preventDefault();
-    document.getElementById('login-error').textContent = '';
-    showSection('login');
-  };
-
-  // Botones volver desde login y register
-  document.getElementById('btn-back-to-welcome').onclick = () => showWelcome();
-  document.getElementById('btn-back-to-welcome2').onclick = () => showWelcome();
-
-  // Login submit
-  document.getElementById('login-form').onsubmit = e => {
-    e.preventDefault();
-    const email = document.getElementById('login-email').value.trim().toLowerCase();
-    const pass = document.getElementById('login-password').value;
-    const errDiv = document.getElementById('login-error');
-    errDiv.textContent = '';
-    const err = login(email, pass);
-    if(err) {
-      errDiv.textContent = err;
-    } else {
-      userEmailSpan.textContent = email;
-      showAppUI(true);
-      showSection('addonList');
-    }
-  };
-
-  // Register submit
-  document.getElementById('register-form').onsubmit = e => {
-    e.preventDefault();
-    const email = document.getElementById('register-email').value.trim().toLowerCase();
-    const pass = document.getElementById('register-password').value;
-    const errDiv = document.getElementById('register-error');
-    errDiv.textContent = '';
-    if(pass.length < 6) {
-      errDiv.textContent = 'La contraseña debe tener al menos 6 caracteres';
-      return;
-    }
-    const err = register(email, pass);
-    if(err) {
-      errDiv.textContent = err;
-    } else {
-      alert('Cuenta creada. Ahora inicia sesión.');
-      showSection('login');
-    }
-  };
-
-  // Logout
   document.getElementById('btn-logout').onclick = () => {
     logout();
-    showWelcome();
   };
 
-  // Cambiar avatar
-  document.getElementById('avatar-upload').onchange = e => {
-    const file = e.target.files[0];
-    if(!file) return;
-    if(!file.type.startsWith('image/')) {
-      alert('Solo se permiten archivos de imagen o GIF.');
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = evt => {
-      setAvatar(session.email, evt.target.result);
-      renderAvatar();
-    };
-    reader.readAsDataURL(file);
-  };
-
-  // Subir addon
-  document.getElementById('upload-addon-form').onsubmit = e => {
+  // --- FORMULARIOS ---
+  document.getElementById('login-form').addEventListener('submit', e => {
     e.preventDefault();
-    if(!session) return alert('Debes iniciar sesión para subir addons');
-    const name = document.getElementById('addon-name').value.trim();
-    const description = document.getElementById('addon-description').value.trim();
-    const file = document.getElementById('addon-file').files[0];
-    const imageFile = document.getElementById('addon-image').files[0];
-    const feedback = document.getElementById('upload-feedback');
-
-    if(!name || !description || !file) {
-      feedback.style.color = '#ff6b6b';
-      feedback.textContent = 'Completa todos los campos requeridos.';
+    const email = e.target['login-email'].value.trim().toLowerCase();
+    const password = e.target['login-password'].value;
+    const err = login(email, password);
+    const errorEl = document.getElementById('login-error');
+    if (err) {
+      errorEl.textContent = err;
       return;
     }
-
-    if(file.size > 5*1024*1024) {
-      feedback.style.color = '#ff6b6b';
-      feedback.textContent = 'El archivo es demasiado grande (máx 5MB).';
-      return;
-    }
-
-    if(imageFile && !imageFile.type.startsWith('image/')) {
-      feedback.style.color = '#ff6b6b';
-      feedback.textContent = 'La imagen debe ser un archivo válido de imagen o GIF.';
-      return;
-    }
-
-    feedback.style.color = '#eee';
-    feedback.textContent = 'Subiendo addon...';
-
-    if(imageFile) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        saveAddon(name, description, file, e.target.result);
-      };
-      reader.onerror = () => {
-        feedback.style.color = '#ff6b6b';
-        feedback.textContent = 'Error al leer la imagen.';
-      };
-      reader.readAsDataURL(imageFile);
-    } else {
-      saveAddon(name, description, file, null);
-    }
-
-    function saveAddon(name, desc, fileObj, imageBase64) {
-      const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
-      const newAddon = {
-        id,
-        name,
-        description: desc,
-        author: session.email,
-        date: new Date().toISOString(),
-        likes: [],
-        comments: [],
-        image: imageBase64,
-        // Nota: no guardamos archivo real en localStorage por limitaciones
-      };
-      addons.push(newAddon);
-      saveData(STORAGE_KEYS.ADDONS, addons);
-      feedback.style.color = '#a4f9a4';
-      feedback.textContent = 'Addon subido con éxito! 🎉';
-      document.getElementById('upload-addon-form').reset();
-      renderUserAddons();
-      renderAddonsSearch(document.getElementById('search-text').value.trim());
-      renderRecentAddons();
-    }
-  };
-
-  // Buscar addons
-  document.getElementById('btn-do-search').onclick = () => {
-    const text = document.getElementById('search-text').value.trim();
-    renderAddonsSearch(text);
-  };
-  document.getElementById('search-text').addEventListener('keypress', e => {
-    if(e.key === 'Enter') {
-      e.preventDefault();
-      document.getElementById('btn-do-search').click();
-    }
+    errorEl.textContent = '';
+    showAppUI(true);
+    showSection('addonList');
+    listAddons('addons-list-recent');
+    loadProfile();
   });
 
-  // Inicializar app
-  function init() {
-    if(session) {
-      userEmailSpan.textContent = session.email;
+  document.getElementById('register-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const email = e.target['register-email'].value.trim().toLowerCase();
+    const password = e.target['register-password'].value;
+    const errorEl = document.getElementById('register-error');
+    const err = register(email, password);
+    if (err) {
+      errorEl.textContent = err;
+      return;
+    }
+    errorEl.textContent = '';
+    alert('Registro exitoso! Ahora inicia sesión.');
+    showSection('login');
+  });
+
+  // --- INICIALIZACIÓN ---
+  window.onload = () => {
+    if (session && users[session.email]) {
       showAppUI(true);
       showSection('addonList');
+      listAddons('addons-list-recent');
+      loadProfile();
     } else {
-      showWelcome();
+      showAppUI(false);
     }
-  }
-  init();
-
+  };
 </script>
-
 </body>
 </html>
