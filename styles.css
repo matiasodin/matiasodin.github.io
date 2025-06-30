@@ -1,0 +1,292 @@
+/* RESET básico */
+* {
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  background: #f0f4f8;
+  color: #222;
+  overflow-x: hidden;
+}
+
+/* CABECERA */
+header {
+  background: #0984e3;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  gap: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+header button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 8px 15px;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+header button::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  background: #74b9ff;
+  bottom: 6px;
+  left: 0;
+  transition: width 0.3s ease;
+}
+
+header button:hover::after {
+  width: 100%;
+}
+
+header button:hover {
+  color: #74b9ff;
+  transform: scale(1.1);
+}
+
+header button:active {
+  transform: scale(0.95);
+}
+
+/* MAIN */
+main {
+  max-width: 900px;
+  margin: 20px auto 40px auto;
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* PAGINAS */
+.page {
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.page.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  position: relative;
+}
+
+/* FORMULARIOS */
+label {
+  display: block;
+  margin-top: 15px;
+  font-weight: 600;
+  color: #222;
+}
+
+input[type="text"],
+input[type="url"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border-radius: 8px;
+  border: 1.8px solid #ccc;
+  font-size: 1rem;
+  outline: none;
+  background: #fefefe;
+  box-shadow: inset 0 0 6px #00000010;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="url"]:focus,
+textarea:focus {
+  border-color: #0984e3;
+  box-shadow: 0 0 10px #0984e3aa;
+  background: #f0f8ff;
+}
+
+/* BOTONES */
+button.submit-btn {
+  margin-top: 18px;
+  background-color: #0984e3;
+  border: none;
+  color: white;
+  padding: 12px 0;
+  width: 100%;
+  font-size: 1.1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 8px 18px #0984e3bb;
+  transition: background-color 0.3s ease, transform 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+button.submit-btn::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: -100%;
+  top: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s ease;
+  border-radius: 50px;
+}
+
+button.submit-btn:hover::before {
+  left: 100%;
+}
+
+button.submit-btn:hover {
+  background-color: #74b9ff;
+  transform: scale(1.05);
+}
+
+button.submit-btn:active {
+  transform: scale(0.9);
+}
+
+/* LISTA DE ADDONS */
+.addon-card {
+  border: 1.5px solid #ddd;
+  border-radius: 12px;
+  padding: 15px 18px;
+  margin-bottom: 18px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  background: white;
+  cursor: default;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideFadeIn 0.5s forwards;
+  animation-fill-mode: forwards;
+}
+
+.addon-card:nth-child(odd) {
+  animation-delay: 0.15s;
+}
+.addon-card:nth-child(even) {
+  animation-delay: 0.3s;
+}
+
+.addon-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 15px 30px rgba(7, 99, 255, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.addon-card h3 {
+  margin: 0 0 8px 0;
+  color: #0984e3;
+  user-select: text;
+}
+
+.addon-card p.desc {
+  color: #555;
+  margin: 0 0 10px 0;
+  white-space: pre-wrap;
+  user-select: text;
+}
+
+.addon-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.addon-actions button {
+  background: #0984e3;
+  border: none;
+  color: white;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.addon-actions button:hover {
+  background: #74b9ff;
+  transform: scale(1.1);
+}
+
+.addon-actions button:active {
+  transform: scale(0.9);
+}
+
+.addon-actions button.delete-btn {
+  background: #e74c3c;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.addon-actions button.delete-btn:hover {
+  background: #ff7675;
+  transform: scale(1.1);
+}
+
+.addon-actions button.delete-btn:active {
+  transform: scale(0.9);
+}
+
+/* PERFIL */
+#profilePic {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #0984e3;
+  cursor: pointer;
+  box-shadow: 0 0 12px #0984e3aa;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#profilePic:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 0 25px #0984e3ff;
+}
+
+#profileName {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-top: 10px;
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1.5px solid #ccc;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#profileName:focus {
+  border-color: #0984e3;
+  box-shadow: 0 0 10px #0984e3cc;
+  background: #e6f0ff;
+}
+
+/* Animación slideFadeIn */
+@keyframes slideFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
